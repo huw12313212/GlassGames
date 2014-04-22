@@ -178,10 +178,12 @@ public class MainActivity extends SimpleBaseGameActivity implements GestureDetec
 	     * @param velocity the velocity of the scroll event
 	     */
 	    private void updateScrollInfo(float displacement, float delta, float velocity) {
-	    	
+	    	float y = player.getY();
 	    	float x = player.getX();
 	    	x += delta;
+	    	y += delta;
 	    	player.setX(x);
+	       	player.setY(y);
 	    		
 	    }
 	// ===========================================================
