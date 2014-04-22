@@ -8,8 +8,12 @@ import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+import org.andengine.entity.IEntity;
+import org.andengine.entity.modifier.AlphaModifier;
+import org.andengine.entity.modifier.IEntityModifier.IEntityModifierListener;
 import org.andengine.entity.modifier.LoopEntityModifier;
 import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.entity.modifier.ParallelEntityModifier;
 import org.andengine.entity.modifier.SequenceEntityModifier;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
@@ -27,6 +31,7 @@ import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.debug.Debug;
+import org.andengine.util.modifier.IModifier;
 import org.andengine.util.modifier.ease.EaseSineInOut;
 
 import android.os.Bundle;
@@ -45,13 +50,24 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 	private static final int INIT_Y = 130;
 	private static int numOfGround = 19;
 	private static float Speed = 300;
-
-
+	private static float JumpDelay = 0.4f;
+	private static float JumpAngle = -30;
+	private static float JumpRotateSpeed = 360;
+	private static float Gravity = 1600;
+	private static float JumpV = -450;
+	private static int TubeCount = 4;
+	private static float TubeDistance = 300;
+	private static float TubeBase = 1000;
+	private static float TubeDifRange = 170;
+	
 	//loaded texture
 	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
 	private TiledTextureRegion mPlayerTextureRegion;
 	private TextureRegion mBackgroundTextureRegion;
 	private TextureRegion mGroundTextureRegion;
+	private TextureRegion mTubeTextureRegion;
+	private TextureRegion mRestartTextureRegion;
+	private TextureRegion mLeaderBoardTextureRegion;
 	
 	
 	private GestureDetector mGestureDetector;
@@ -61,16 +77,40 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 	private AnimatedSprite player;
 	private Sprite background;
 	private List<Sprite> grounds;
+	private List<Sprite> tubes;
+	private Sprite leaderBoard;
+	private Sprite restart;
 	
 	//animation
 	private LoopEntityModifier startAnimation;
+	private ParallelEntityModifier FadeIn;
+	private ParallelEntityModifier FadeOut;
+	private ParallelEntityModifier FadeIn2;
+	private ParallelEntityModifier FadeOut2;
+	
+	
+	//parameter
+	private float JumpDelayCounter;
+	private float Vy = 0;
+
+	
+	//States
+	private enum GameState
+	{
+		waiting,
+		gaming,
+		dyingAnimation,
+		dying,
+	};
+	
+	private GameState gameState = GameState.waiting;
 
 
 		@Override
 	  protected void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
 	        mGestureDetector = new GestureDetector(this)
-	                .setScrollListener(this).setTwoFingerScrollListener(this);
+	                .setScrollListener(this).setTwoFingerScrollListener(this).setBaseListener(this).setFingerListener(this);
 	    }
 	
 	@Override
@@ -84,10 +124,13 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 1024, 1024, TextureOptions.NEAREST);
+		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 2048, 1024, TextureOptions.NEAREST);
 		this.mPlayerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mBitmapTextureAtlas,this,"flappyBird/flappybird.png",3,1);
 		this.mBackgroundTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this, "flappyBird/background.png");
 		this.mGroundTextureRegion =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this, "flappyBird/ground.png");
+		this.mTubeTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this, "flappyBird/tube.png");
+		this.mRestartTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this, "flappyBird/restart.png");
+		this.mLeaderBoardTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this, "flappyBird/board.png");
 		
 
 		try {
@@ -100,10 +143,27 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 
 	private void gameInit()
 	{
-		   
+		Vy = 0;
+		this.player.setRotation(0);
 		this.player.setPosition(INIT_X,INIT_Y);
 		this.player.registerEntityModifier(this.startAnimation);
-				   
+		this.player.animate(100);
+		
+		
+		for(int i=0;i<TubeCount;i++)
+		{
+			Sprite tube1 = tubes.get(i*2);
+			Sprite tube2 = tubes.get(i*2+1);
+		
+			float dif = (float)(Math.random() * TubeDifRange - TubeDifRange/2);
+		
+		
+			tube1.setY(0 + dif);
+			tube2.setY(-500 + dif);
+		
+			tube1.setX(TubeBase + i*TubeDistance);
+			tube2.setX(TubeBase + i*TubeDistance);
+		}
 	}
 	
 	@Override
@@ -120,11 +180,7 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 		scene.attachChild(background);
 		
 		
-		this.player = new AnimatedSprite(0,0,this.mPlayerTextureRegion,this.getVertexBufferObjectManager());
-		this.player.animate(100);
-		this.player.setRotationCenter(46, 32);
-		this.player.setScale(0.6f);
-		scene.attachChild(this.player);
+
 		
 		//PathModifier pModifier = new PositionModifer();
 		
@@ -137,8 +193,31 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 		
 		this.mEngine.registerUpdateHandler(this);
 		
+
+		tubes = new ArrayList<Sprite>();
+		for(int i = 0; i<TubeCount;i++)
+		{
+			Sprite tube1 = new Sprite(0,0,this.mTubeTextureRegion,this.getVertexBufferObjectManager());
+			Sprite tube2 = new Sprite(0,0,this.mTubeTextureRegion,this.getVertexBufferObjectManager());
+			
+			tube1.setScale(0.5f);
+			tube2.setScale(0.5f);
+			
+			tube2.setRotation(180);
+			
+			tubes.add(tube1);
+			tubes.add(tube2);
+			
+			scene.attachChild(tube1);
+			scene.attachChild(tube2);
+		}
 		
-		
+		this.player = new AnimatedSprite(0,0,this.mPlayerTextureRegion,this.getVertexBufferObjectManager());
+
+		this.player.setRotationCenter(46, 32);
+		this.player.setScale(0.6f);
+		scene.attachChild(this.player);
+	
 		
 		grounds = new ArrayList<Sprite>();
 		for(int i =0;i<numOfGround;i++)
@@ -151,19 +230,226 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 		}
 		
 		
+		this.restart = new Sprite(0,0,this.mRestartTextureRegion,this.getVertexBufferObjectManager());
+		this.leaderBoard = new Sprite(0,0,this.mLeaderBoardTextureRegion,this.getVertexBufferObjectManager());
+		this.restart.setScale(0.6f);
+		this.leaderBoard.setScale(0.6f);
+		this.restart.setAlpha(0);
+		this.leaderBoard.setAlpha(0);
+		
+		scene.attachChild(this.leaderBoard);
+		scene.attachChild(this.restart);
 		
 		gameInit();
+		
+		this.FadeIn = new ParallelEntityModifier(new IEntityModifierListener(){
 
+			@Override
+			public void onModifierStarted(IModifier<IEntity> pModifier,
+					IEntity pItem) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onModifierFinished(IModifier<IEntity> pModifier,
+					IEntity pItem) {
+				
+				gameState = GameState.dying;
+				
+			}},
+				new MoveModifier(0.3f,210,210,180,200),
+				new AlphaModifier(0.3f,0,1f)
+				);
+		
+		
+		this.FadeOut = new ParallelEntityModifier(
+				new MoveModifier(0.1f,210,210,200,180),
+				new AlphaModifier(0.1f,1,0f)
+				);
+		
+
+		this.FadeIn2 = new ParallelEntityModifier(
+				new MoveModifier(0.3f,230,230,0,10),
+				new AlphaModifier(0.3f,0,1f)
+				);
+		
+		
+		this.FadeOut2 = new ParallelEntityModifier(
+				new MoveModifier(0.1f,230,230,10,0),
+				new AlphaModifier(0.1f,1,0f)
+				);
+		
+		
+		
 		return scene;
+	}
+	
+	private void updateTubes(float pSeconds)
+	{
+		for(int i=0;i<TubeCount;i++)
+		{
+			Sprite tube1 = tubes.get(i*2);
+			Sprite tube2 = tubes.get(i*2+1);
+		
+			
+			float tubeX = tube1.getX();
+			
+			tubeX -= pSeconds*Speed;
+			
+			if(tubeX<-200)
+			{
+
+				float dif = (float)(Math.random() * TubeDifRange - TubeDifRange/2);
+			
+				tube1.setY(0 + dif);
+				tube2.setY(-500 + dif);
+				
+				tube1.setX(tubeX+TubeCount*TubeDistance);
+				tube2.setX(tubeX+TubeCount*TubeDistance);
+				
+				
+			}
+			else
+			{
+				tube1.setX(tubeX);
+				tube2.setX(tubeX);
+			}
+
+		}
 	}
 	
 	//IUpdateHandler
 	@Override
 	public void onUpdate(float pSecondsElapsed) {
 		// TODO Auto-generated method stub
-		updateGround(pSecondsElapsed);
+		
+		
+		if(gameState == GameState.waiting)
+		{
+			updateGround(pSecondsElapsed);
+		}
+		else if(gameState == GameState.gaming)
+		{
+			updateGround(pSecondsElapsed);
+			updateTubes(pSecondsElapsed);
+			
+			
+			if(JumpDelayCounter>0)
+			{
+				JumpDelayCounter -=pSecondsElapsed;
+			}
+			else
+			{
+				float r = player.getRotation();
+				
+				if(r<90)
+				{
+					r += JumpRotateSpeed * pSecondsElapsed;
+					player.setRotation(r);
+				}
+				else
+				{
+					r = 90;
+					player.setRotation(r);
+				}
+				
+			}
+			
+			
+			Vy += Gravity*pSecondsElapsed;
+			
+			float playerY = player.getY();
+			playerY += Vy*pSecondsElapsed;
+			
+			if(playerY<-30)
+			{
+				playerY=-30;
+				Vy =0;
+			}
+			
+
+			if(playerY>265)
+			{
+				playerY = 265;
+				kill();
+			
+			}
+			else if(IsCollideAnyTube(10))
+			{
+				kill();
+			}
+				
+				player.setY(playerY);
+			
+		}
+		else if(gameState == GameState.dyingAnimation)
+		{
+			
+		}
+		else if(gameState == GameState.dying)
+		{
+			
+		}
 		//this.player.setRotation(this.player.getRotation()+pSecondsElapsed*360);
 		
+	}
+	
+	private void kill()
+	{
+		gameState = GameState.dyingAnimation;
+		player.stopAnimation();
+		this.restart.clearEntityModifiers();
+		this.FadeIn.reset();
+		this.restart.registerEntityModifier(this.FadeIn);
+		
+		this.leaderBoard.clearEntityModifiers();
+		this.FadeIn2.reset();
+		this.leaderBoard.registerEntityModifier(this.FadeIn2);
+		
+	}
+	
+	private boolean IsCollideAnyTube(float padding)
+	{
+		for(int i=0;i<tubes.size();i++)
+		{
+			if(IsCollide(player,tubes.get(i),padding))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private boolean IsCollide(Sprite s1,Sprite s2,float padding)
+	{
+		//s1.collidesWith(pOtherShape)
+		//return s1.collidesWith(s2);
+		
+		float s1CenterX = s1.getX() + (s1.getWidth()/2);
+		float s1CenterY = s1.getY() + (s1.getHeight()/2);
+		float s1leftX = s1CenterX - s1.getWidthScaled()/2 + padding;
+		float s1rightX = s1CenterX + s1.getWidthScaled()/2 - padding;
+		float s1topY = s1CenterY - s1.getHeightScaled()/2 + padding;
+		float s1downY = s1CenterY + s1.getHeightScaled()/2 - padding;
+		
+		
+		float s2CenterX = s2.getX() + (s2.getWidth()/2);
+		float s2CenterY = s2.getY() + (s2.getHeight()/2);
+		float s2leftX = s2CenterX - s2.getWidthScaled()/2;
+		float s2rightX = s2CenterX + s2.getWidthScaled()/2;
+		float s2topY = s2CenterY - s2.getHeightScaled()/2;
+		float s2downY = s2CenterY + s2.getHeightScaled()/2;
+		
+		if(s1leftX < s2rightX && s1rightX > s2leftX && s1topY < s2downY && s1downY>s2topY)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	
 	private void updateGround(float pSecondsElapsed)
@@ -209,9 +495,7 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 
 	    @Override
 	    public boolean onTwoFingerScroll(float displacement, float delta, float velocity) {
-	       
-	    	
-	    	
+
 	    	
 	        updateScrollInfo(displacement, delta, velocity);
 	        return false;
@@ -234,9 +518,57 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 	// ===========================================================
 
 		@Override
-		public void onFingerCountChanged(int arg0, int arg1) {
+		public void onFingerCountChanged(int previous, int current) {
 			// TODO Auto-generated method stub
 			
+			
+			if(current>previous)
+			{
+				tap();
+			}
+			
+		}
+		
+		private void tap()
+		{
+			if(gameState == GameState.waiting)
+			{
+				player.clearEntityModifiers();
+				gameState = GameState.gaming;
+				jump();
+			}
+			else if(gameState == GameState.gaming)
+			{
+				jump();
+				
+			}
+			else if(gameState == GameState.dyingAnimation)
+			{
+				
+			}
+			else if(gameState == GameState.dying)
+			{
+				gameInit();
+				gameState = GameState.waiting;
+				
+				this.restart.clearEntityModifiers();
+				this.FadeOut.reset();
+				this.restart.registerEntityModifier(this.FadeOut);
+				
+				this.leaderBoard.clearEntityModifiers();
+				this.FadeOut2.reset();
+				this.leaderBoard.registerEntityModifier(FadeOut2);
+			}
+			
+		}
+		
+		
+		private void jump()
+		{
+			JumpDelayCounter = JumpDelay;
+			Vy = JumpV;
+			
+			player.setRotation(JumpAngle);
 		}
 
 		@Override
