@@ -1,12 +1,20 @@
 package com.example.glassgameflappybird;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
+import org.andengine.entity.modifier.LoopEntityModifier;
+import org.andengine.entity.modifier.MoveModifier;
+import org.andengine.entity.modifier.SequenceEntityModifier;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
@@ -15,58 +23,49 @@ import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
 import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
 import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
+import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
 import org.andengine.util.debug.Debug;
+import org.andengine.util.modifier.ease.EaseSineInOut;
 
-import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 
 import com.google.android.glass.touchpad.Gesture;
 import com.google.android.glass.touchpad.GestureDetector;
 
-/**
- * (c) 2010 Nicolas Gramlich
- * (c) 2011 Zynga
- *
- * @author Nicolas Gramlich
- * @since 11:54:51 - 03.04.2010
- */
-public class MainActivity extends SimpleBaseGameActivity implements GestureDetector.ScrollListener, GestureDetector.TwoFingerScrollListener,GestureDetector.BaseListener, GestureDetector.FingerListener{
-	// ===========================================================
-	// Constants
-	// ===========================================================
+
+public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandler, GestureDetector.ScrollListener, GestureDetector.TwoFingerScrollListener,GestureDetector.BaseListener, GestureDetector.FingerListener{
+
 
 	private static final int CAMERA_WIDTH = 640;
 	private static final int CAMERA_HEIGHT = 360;
+	private static final int INIT_X = 200;
+	private static final int INIT_Y = 130;
+	private static int numOfGround = 19;
+	private static float Speed = 300;
 
-	// ===========================================================
-	// Fields
-	// ===========================================================
 
+	//loaded texture
 	private BuildableBitmapTextureAtlas mBitmapTextureAtlas;
-
-	private TiledTextureRegion mSnapdragonTextureRegion;
-	private TiledTextureRegion mHelicopterTextureRegion;
-	private TiledTextureRegion mBananaTextureRegion;
-	private TiledTextureRegion mFaceTextureRegion;
+	private TiledTextureRegion mPlayerTextureRegion;
+	private TextureRegion mBackgroundTextureRegion;
+	private TextureRegion mGroundTextureRegion;
+	
 	
 	private GestureDetector mGestureDetector;
+	
+	
+	//sprite instances
+	private AnimatedSprite player;
+	private Sprite background;
+	private List<Sprite> grounds;
+	
+	//animation
+	private LoopEntityModifier startAnimation;
 
-	// ===========================================================
-	// Constructors
-	// ===========================================================
 
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
-
-	// ===========================================================
-	// Methods for/from SuperClass/Interfaces
-	// ===========================================================
 		@Override
 	  protected void onCreate(Bundle savedInstanceState) {
 	        super.onCreate(savedInstanceState);
@@ -78,16 +77,6 @@ public class MainActivity extends SimpleBaseGameActivity implements GestureDetec
 	public EngineOptions onCreateEngineOptions() {
 		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		
-		
-		Display display = getWindowManager().getDefaultDisplay();
-		Point size = new Point();
-		display.getSize(size);
-		int width = size.x;
-		int height = size.y;
-		Log.d("ntu", "screen:"+width+":"+height);
-		
-		
-
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
 	}
 
@@ -95,13 +84,11 @@ public class MainActivity extends SimpleBaseGameActivity implements GestureDetec
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 256, TextureOptions.NEAREST);
-//		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 512, 256, TextureOptions.BILINEAR);
+		this.mBitmapTextureAtlas = new BuildableBitmapTextureAtlas(this.getTextureManager(), 1024, 1024, TextureOptions.NEAREST);
+		this.mPlayerTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(mBitmapTextureAtlas,this,"flappyBird/flappybird.png",3,1);
+		this.mBackgroundTextureRegion= BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this, "flappyBird/background.png");
+		this.mGroundTextureRegion =  BitmapTextureAtlasTextureRegionFactory.createFromAsset(mBitmapTextureAtlas, this, "flappyBird/ground.png");
 		
-		this.mSnapdragonTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "snapdragon_tiled.png", 4, 3);
-		this.mHelicopterTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "helicopter_tiled.png", 2, 2);
-		this.mBananaTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "banana_tiled.png", 4, 2);
-		this.mFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "face_box_tiled.png", 2, 1);
 
 		try {
 			this.mBitmapTextureAtlas.build(new BlackPawnTextureAtlasBuilder<IBitmapTextureAtlasSource, BitmapTextureAtlas>(0, 0, 1));
@@ -111,6 +98,14 @@ public class MainActivity extends SimpleBaseGameActivity implements GestureDetec
 		}
 	}
 
+	private void gameInit()
+	{
+		   
+		this.player.setPosition(INIT_X,INIT_Y);
+		this.player.registerEntityModifier(this.startAnimation);
+				   
+	}
+	
 	@Override
 	public Scene onCreateScene() {
 		this.mEngine.registerUpdateHandler(new FPSLogger());
@@ -118,34 +113,87 @@ public class MainActivity extends SimpleBaseGameActivity implements GestureDetec
 		final Scene scene = new Scene();
 		scene.setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
 		
-
-		/* Quickly twinkling face. */
-		final AnimatedSprite face = new AnimatedSprite(100, 50, this.mFaceTextureRegion, this.getVertexBufferObjectManager());
-		face.animate(100);
-		scene.attachChild(face);
-
-		/* Continuously flying helicopter. */
-		final AnimatedSprite helicopter = new AnimatedSprite(320, 50, this.mHelicopterTextureRegion, this.getVertexBufferObjectManager());
-		helicopter.animate(new long[] { 100, 100 }, 1, 2, true);
-		scene.attachChild(helicopter);
-
-		/* Snapdragon. */
-		final AnimatedSprite snapdragon = new AnimatedSprite(300, 200, this.mSnapdragonTextureRegion, this.getVertexBufferObjectManager());
-		snapdragon.animate(100);
-		scene.attachChild(snapdragon);
-
-		/* Funny banana. */
-		final AnimatedSprite banana = new AnimatedSprite(100, 220, this.mBananaTextureRegion, this.getVertexBufferObjectManager());
-		banana.animate(100);
-		scene.attachChild(banana);
+		//background
+		this.background = new Sprite(0,0,this.mBackgroundTextureRegion,this.getVertexBufferObjectManager());
+		float backgroundY =CAMERA_HEIGHT - this.background.getHeight() - 50;
+		this.background.setY(backgroundY);
+		scene.attachChild(background);
 		
-		player = banana;
+		
+		this.player = new AnimatedSprite(0,0,this.mPlayerTextureRegion,this.getVertexBufferObjectManager());
+		this.player.animate(100);
+		this.player.setRotationCenter(46, 32);
+		this.player.setScale(0.6f);
+		scene.attachChild(this.player);
+		
+		//PathModifier pModifier = new PositionModifer();
+		
+		//FlappyBird Animation
+		MoveModifier move1 = new MoveModifier(0.5f,INIT_X,INIT_X,INIT_Y,INIT_Y+20,EaseSineInOut.getInstance());
+		MoveModifier move2 = new MoveModifier(0.5f,INIT_X,INIT_X,INIT_Y+20,INIT_Y,EaseSineInOut.getInstance());
+		SequenceEntityModifier sequence = new SequenceEntityModifier(move1,move2);
+		this.startAnimation = new LoopEntityModifier(sequence);
+		
+		
+		this.mEngine.registerUpdateHandler(this);
+		
+		
+		
+		
+		grounds = new ArrayList<Sprite>();
+		for(int i =0;i<numOfGround;i++)
+		{
+			Sprite ground = new Sprite(i*37,300,this.mGroundTextureRegion,this.getVertexBufferObjectManager());
+			ground.setScaleX(1.01f);
+			scene.attachChild(ground);
+			
+			grounds.add(ground);
+		}
+		
+		
+		
+		gameInit();
 
 		return scene;
 	}
 	
+	//IUpdateHandler
+	@Override
+	public void onUpdate(float pSecondsElapsed) {
+		// TODO Auto-generated method stub
+		updateGround(pSecondsElapsed);
+		//this.player.setRotation(this.player.getRotation()+pSecondsElapsed*360);
+		
+	}
 	
-	AnimatedSprite player;
+	private void updateGround(float pSecondsElapsed)
+	{
+		float dif = pSecondsElapsed * Speed;
+		
+		for(int i=0;i<numOfGround;i++)
+		{
+			Sprite ground = grounds.get(i);
+			
+			float x = ground.getX();
+			x -= dif;
+			
+			if(x<-40)
+			{
+				x+=numOfGround*ground.getWidth();
+			}
+			
+			 ground.setX(x);
+			
+		}
+	}
+
+	//IUpdateHandler
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 	  @Override
 	    public boolean onGenericMotionEvent(MotionEvent event) {
@@ -178,12 +226,7 @@ public class MainActivity extends SimpleBaseGameActivity implements GestureDetec
 	     * @param velocity the velocity of the scroll event
 	     */
 	    private void updateScrollInfo(float displacement, float delta, float velocity) {
-	    	float y = player.getY();
-	    	float x = player.getX();
-	    	x += delta;
-	    	y += delta;
-	    	player.setX(x);
-	       	player.setY(y);
+
 	    		
 	    }
 	// ===========================================================
