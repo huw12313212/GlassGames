@@ -19,7 +19,11 @@ import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.sprite.Sprite;
+import org.andengine.entity.text.Text;
+import org.andengine.entity.text.TextOptions;
 import org.andengine.entity.util.FPSLogger;
+import org.andengine.opengl.font.StrokeFont;
+import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -30,10 +34,13 @@ import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.HorizontalAlign;
 import org.andengine.util.debug.Debug;
 import org.andengine.util.modifier.IModifier;
 import org.andengine.util.modifier.ease.EaseSineInOut;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.MotionEvent;
 
@@ -68,6 +75,8 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 	private TextureRegion mTubeTextureRegion;
 	private TextureRegion mRestartTextureRegion;
 	private TextureRegion mLeaderBoardTextureRegion;
+	private ITexture fontTexture;
+	private StrokeFont mStrokeFont;
 	
 	
 	private GestureDetector mGestureDetector;
@@ -80,6 +89,10 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 	private List<Sprite> tubes;
 	private Sprite leaderBoard;
 	private Sprite restart;
+	private Text scoreText;
+	
+	//private Text endScoreText;
+	//private Text endHighText;
 	
 	//animation
 	private LoopEntityModifier startAnimation;
@@ -92,6 +105,11 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 	//parameter
 	private float JumpDelayCounter;
 	private float Vy = 0;
+	private float CurrentDistance;
+	private int NowScore;
+	private int HighScore;;
+	
+	
 
 	
 	//States
@@ -139,16 +157,30 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 		} catch (TextureAtlasBuilderException e) {
 			Debug.e(e);
 		}
+		
+		fontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+		
+		this.mStrokeFont = new StrokeFont(this.getFontManager(), this.fontTexture, Typeface.create(Typeface.DEFAULT, Typeface.BOLD), 64, true, Color.WHITE, 2, Color.BLACK);
+		this.mStrokeFont.load();
+		
+		
 	}
+	
 
 	private void gameInit()
 	{
 		Vy = 0;
+		NowScore = 0;
+		this.scoreText.setText("0");
+		this.scoreText.setX(580-scoreText.getWidth()+32);
+		
+		
 		this.player.setRotation(0);
 		this.player.setPosition(INIT_X,INIT_Y);
 		this.player.registerEntityModifier(this.startAnimation);
 		this.player.animate(100);
-		
+		CurrentDistance = 400;
+		 
 		
 		for(int i=0;i<TubeCount;i++)
 		{
@@ -239,6 +271,12 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 		
 		scene.attachChild(this.leaderBoard);
 		scene.attachChild(this.restart);
+		
+
+		scoreText = new Text(580, 10, this.mStrokeFont, "0123456789", new TextOptions(HorizontalAlign.RIGHT), this.getVertexBufferObjectManager());
+		//this.scoreText.setX(640-scoreText.getWidth());
+		//scoreText.setColor(pRed, pGreen, pBlue);
+		scene.attachChild(this.scoreText);
 		
 		gameInit();
 		
@@ -331,6 +369,22 @@ public class MainActivity extends SimpleBaseGameActivity implements IUpdateHandl
 		}
 		else if(gameState == GameState.gaming)
 		{
+			CurrentDistance+= pSecondsElapsed*Speed;
+			
+			if(CurrentDistance>TubeBase)
+			{
+				Integer score = (int)((CurrentDistance - TubeBase)/TubeDistance);
+				NowScore = score;
+				if(NowScore>HighScore)
+				{
+					HighScore = NowScore;
+				}
+				
+				this.scoreText.setText(score.toString());
+				this.scoreText.setX(580-scoreText.getWidth()+32);
+			}
+			
+			
 			updateGround(pSecondsElapsed);
 			updateTubes(pSecondsElapsed);
 			
