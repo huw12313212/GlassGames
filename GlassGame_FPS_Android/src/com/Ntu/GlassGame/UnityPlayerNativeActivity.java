@@ -20,7 +20,10 @@ public class UnityPlayerNativeActivity extends NativeActivity
 	{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		super.onCreate(savedInstanceState);
-
+		
+		//keep screen on
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		
 		getWindow().takeSurface(null);
 		setTheme(android.R.style.Theme_NoTitleBar_Fullscreen);
 		getWindow().setFormat(PixelFormat.RGB_565);
