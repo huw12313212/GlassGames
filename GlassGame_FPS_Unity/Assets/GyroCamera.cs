@@ -5,9 +5,17 @@ public class GyroCamera : MonoBehaviour {
 	Vector3 initialDirection;
 	bool setInitialDirection;
 	Vector3 identityAngle;
+
+
+	private bool gyroBool ;
+	private Quaternion rotFix ;
+	private Gyroscope gyro;
+
+
 	// Use this for initialization
 	void Start () {
 
+		/*
 		//init 
 		setInitialDirection = false;
 		identityAngle = new Vector3 (0, 0, 0);
@@ -17,6 +25,30 @@ public class GyroCamera : MonoBehaviour {
 		//enable gtro
 		if( gyoBool ) {
 			Input.gyro.enabled = true;
+		}*/
+
+		Transform originalParent = transform.parent; // check if this transform has a parent
+		GameObject camParent = new GameObject ("camParent"); // make a new parent
+		camParent.transform.position = transform.position; // move the new parent to this transform position
+		transform.parent = camParent.transform; // make this transform a child of the new parent
+		camParent.transform.parent = originalParent; // make the new parent a child of the original parent
+		
+		gyroBool = Input.isGyroAvailable;
+		
+		if (gyroBool) {
+			
+			gyro = Input.gyro;
+			gyro.enabled = true;
+			Debug.Log("Orientation:"+Screen.orientation);
+
+
+				camParent.transform.eulerAngles = new Vector3(90,180,0);
+
+				rotFix =new  Quaternion(0f,0f,1f,0f);
+
+			//Screen.sleepTimeout = 0;
+		} else {
+			print("NO GYRO");
 		}
 	
 	}
@@ -24,7 +56,12 @@ public class GyroCamera : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		//update direction
-		updateDirectionFromGyro ();
+		//updateDirectionFromGyro ();
+
+		if (gyroBool) {
+			Quaternion camRot = gyro.attitude * rotFix;
+			transform.localRotation = camRot;
+		}
 	}
 
 	void updateDirectionFromGyro(){
