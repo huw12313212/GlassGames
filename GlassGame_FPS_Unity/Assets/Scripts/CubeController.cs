@@ -11,7 +11,7 @@ public class CubeController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		transform.position += transform.forward * 1 * Time.deltaTime;
+		//transform.position += transform.forward * 1 * Time.deltaTime;
 
 		//touch
 		handleTouch ();
