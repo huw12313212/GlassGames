@@ -92,19 +92,27 @@ public class NetworkManager : MonoBehaviour {
 	}
 
 	void parseCommand(){
-		foreach (string command in commandList) {
-			switch (command){
-				case "Up":
+		foreach (string commandObject in commandList) {
+			//parse to json 
+			JSONObject jsonObject = new JSONObject(commandObject);
+
+			string commandStr = jsonObject["command"].str;
+
+			switch (commandStr){
+				case "up":
 				targetObject.transform.position += targetObject.transform.forward * 20.0f * Time.deltaTime;
 					break;
-				case "Down":
+				case "down":
 				targetObject.transform.position -= targetObject.transform.forward * 20.0f * Time.deltaTime;
 					break;
-				case "Right":
+				case "right":
 				targetObject.transform.position += targetObject.transform.right * 20.0f * Time.deltaTime;
 					break;
-				case "Left":
+				case "left":
 				targetObject.transform.position -= targetObject.transform.right * 20.0f * Time.deltaTime;
+					break;
+				default:
+				Debug.Log("No such command:"+commandStr);
 					break;
 			}
 
