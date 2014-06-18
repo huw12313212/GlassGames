@@ -7,11 +7,6 @@ public class GyroCamera : MonoBehaviour {
 	private Quaternion rotFix ;
 	private Gyroscope gyro;
 
-
-	private bool isInitY =false;
-	private float initY = 0;
-
-
 	// Use this for initialization
 	void Start () {
 
@@ -27,12 +22,12 @@ public class GyroCamera : MonoBehaviour {
 			
 			gyro = Input.gyro;
 			gyro.enabled = true;
-			Debug.Log("Orientation:"+Screen.orientation);
+			//Debug.Log("Orientation:"+Screen.orientation);
 
 
-				camParent.transform.eulerAngles = new Vector3(90,180,0);
+			camParent.transform.eulerAngles = new Vector3(90,180,0);
 
-				rotFix =new  Quaternion(0f,0f,1f,0f);
+			rotFix =new  Quaternion(0f,0f,1f,0f);
 
 			//Screen.sleepTimeout = 0;
 		} else {
@@ -40,24 +35,14 @@ public class GyroCamera : MonoBehaviour {
 		}
 	
 	}
+
 	
 	// Update is called once per frame
 	void Update () {
 
-		if (gyroBool) {
-
-
-			if (!isInitY) 
-			{
-				initY = gyro.attitude.y;
-				isInitY = true;
-				Debug.Log("initY:"+initY);
-			}
-
-			Vector3 faceVector = gyro.attitude.eulerAngles;
-			faceVector.y -= initY;
-
-			Quaternion camRot = Quaternion.Euler(faceVector) * rotFix;
+		if (gyroBool) 
+		{
+			Quaternion camRot = gyro.attitude * rotFix;
 			transform.localRotation = camRot;
 		}
 	}
