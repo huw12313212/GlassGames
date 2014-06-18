@@ -15,12 +15,13 @@ public class NetworkManager : MonoBehaviour {
 
 	//player
 	public GameObject targetObject;
-	public List<string> commandList;
+	public ArrayList commandList;
+	public PlayerController playerController;
 
 	// Use this for initialization
 	void Start () {
 		//init
-		commandList = new List<string> ();
+		commandList = new ArrayList ();
 		this.tcpListener = new TcpListener(IPAddress.Any, serverPort);
 		this.listenThread = new Thread(new ThreadStart(ListenForClients));
 		this.listenThread.Start();
@@ -83,8 +84,11 @@ public class NetworkManager : MonoBehaviour {
 			string commandStr = encoder.GetString(message, 0, bytesRead);
 			Debug.Log("Get Command:"+commandStr);
 
+			//parse to json object
+			JSONObject commandJsonObject = new JSONObject(commandStr);
+
 			//push to command list
-			commandList.Add (commandStr);
+			commandList.Add (commandJsonObject);
 
 		}
 		
@@ -92,36 +96,58 @@ public class NetworkManager : MonoBehaviour {
 	}
 
 	void parseCommand(){
-		foreach (string commandObject in commandList) {
-			//parse to json 
-			JSONObject jsonObject = new JSONObject(commandObject);
+		//check
+		if (commandList.Count == 0) {
+			return;
+		}
 
-			string commandStr = jsonObject["command"].str;
+		ArrayList tempCommandList = (ArrayList)commandList.Clone();
+
+		foreach (JSONObject commandObject in tempCommandList) {
+			//get command
+			string commandStr = commandObject["command"].str;
 
 			switch (commandStr){
 				case "up":
-				targetObject.transform.position += targetObject.transform.forward * 20.0f * Time.deltaTime;
+					targetObject.transform.position += targetObject.transform.forward * 20.0f * Time.deltaTime;
 					break;
 				case "down":
-				targetObject.transform.position -= targetObject.transform.forward * 20.0f * Time.deltaTime;
+					targetObject.transform.position -= targetObject.transform.forward * 20.0f * Time.deltaTime;
 					break;
 				case "right":
-				targetObject.transform.position += targetObject.transform.right * 20.0f * Time.deltaTime;
+					targetObject.transform.position += targetObject.transform.right * 20.0f * Time.deltaTime;
 					break;
 				case "left":
-				targetObject.transform.position -= targetObject.transform.right * 20.0f * Time.deltaTime;
+					targetObject.transform.position -= targetObject.transform.right * 20.0f * Time.deltaTime;
+					break;
+				case "singleTap":
+					playerController.shoot();
+					Debug.Log("Single Tap!");
+					break;
+				case "soubleTap":
+					Debug.Log("Double Tap!");
+					break;
+				case "fling":
+					Debug.Log("Fling!");
+					break;
+				case "longPress":
+					Debug.Log("Long Press!");
+					break;			
+				case "gyro":
+					Debug.Log("Gyro: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
+					break;
+				case "accelerometer":
+					Debug.Log("Accelerometer: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
 					break;
 				default:
-				Debug.Log("No such command:"+commandStr);
+					Debug.Log("No such command:"+commandStr);
 					break;
 			}
-
-			//remove command
-			//commandList.Remove(command);
 		}
 
 		//clear commands
-		commandList.Clear();
+		commandList.RemoveRange (0, tempCommandList.Count);
+		//commandList.Clear();
 
 	}
 

@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour {
 				
 			case TouchPhase.Began: //here begins the 1st case
 				//shoot
-				Instantiate(bullet,transform.position,transform.rotation);
+				shoot();
 
 				Debug.Log ("Touch!");
 				break; //here ends the 1st case
@@ -34,5 +34,11 @@ public class PlayerController : MonoBehaviour {
 				break;
 			}
 		}
+	}
+
+	public void shoot(){
+		//shoot
+		Instantiate(bullet,transform.position,transform.rotation);
+
 	}
 }
