@@ -107,6 +107,11 @@ public class NetworkManager : MonoBehaviour {
 			//get command
 			string commandStr = commandObject["command"].str;
 
+			//check
+			if(commandStr == null) {
+				return;
+			}
+
 			switch (commandStr){
 				case "up":
 					targetObject.transform.position += targetObject.transform.forward * 20.0f * Time.deltaTime;
