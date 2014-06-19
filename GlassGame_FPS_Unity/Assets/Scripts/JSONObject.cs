@@ -291,8 +291,14 @@ public class JSONObject  {
 	public JSONObject GetField(string name) {
 		if(type == JSONObject.Type.OBJECT)
 			for(int i = 0; i < keys.Count; i++)
-				if((string)keys[i] == name)
+				if((string)keys[i] == name){
+				if(i<list.Count){
 					return (JSONObject)list[i];
+				}
+				else{
+					return null;
+				}
+			}
 		return null;
 	}
 	public bool HasField(string name) {
@@ -373,6 +379,8 @@ public class JSONObject  {
 				for (int i = 0; i < keys.Count; i++)
 				{
 					string key = (string)keys[i];
+					//check
+					if(i>list.Count) return null;
 					JSONObject obj = (JSONObject)list[i];
 					if(obj != null) {
 						#if(READABLE)

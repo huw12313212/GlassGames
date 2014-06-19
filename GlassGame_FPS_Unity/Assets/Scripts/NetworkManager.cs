@@ -86,15 +86,26 @@ public class NetworkManager : MonoBehaviour {
 			//Command may contain more than 1 command
 			string commandStr = encoder.GetString(message, 0, bytesRead);
 
-			Debug.Log("Get Command:"+commandStr);
+			//Debug.Log("Get Command:"+commandStr);
 
-			//parse to json object
-			JSONObject commandJsonObject = new JSONObject(commandStr);
+			//split command
+			char[] splitChar = {'{'};
 
-			//Debug.Log("Get Command object:"+commandJsonObject);
+			string[] results = commandStr.Split(splitChar);
 
-			//push to command list
-			commandList.Add (commandJsonObject);
+			//get all command in command Str
+			for(int i = 1;i<results.Length;i++){
+				results[i] = splitChar[0]+results[i];
+				//Debug.Log("Get Command split:"+results[i]);
+
+				//parse to json object
+				JSONObject commandJsonObject = new JSONObject(results[i]);
+
+				//push to command list
+				if(commandJsonObject!=null){ 
+					commandList.Add (commandJsonObject);
+				}
+			}
 
 		}
 		
@@ -110,6 +121,7 @@ public class NetworkManager : MonoBehaviour {
 		ArrayList tempCommandList = (ArrayList)commandList.Clone();
 
 		foreach (JSONObject commandObject in tempCommandList) {
+			//Debug.Log("Command Object:"+commandObject.ToString());
 			//check
 			if(commandObject == null) continue;
 			else if(commandObject["command"] == null) continue;
@@ -124,13 +136,18 @@ public class NetworkManager : MonoBehaviour {
 
 			switch (commandStr){
 				case "move":
-					//get value
-					float x = (float)commandObject["x"].n;
-					float y = (float)commandObject["y"].n;
-					botControllScript.ControllerH = x;
-					botControllScript.ControllerV = -y;
-					//targetObject.transform.position -= targetObject.transform.forward * y * playerController.moveSpeed * Time.deltaTime;
-					//targetObject.transform.position += targetObject.transform.right * x * playerController.moveSpeed * Time.deltaTime;
+					//check
+					if(commandObject!=null){
+						//check, bug here!
+						if((commandObject["x"].n == null) || (commandObject["y"].n == null)) continue;
+						//get value
+						float x = (float)commandObject["x"].n;
+						float y = (float)commandObject["y"].n;
+						botControllScript.ControllerH = x;
+						botControllScript.ControllerV = -y;
+						//targetObject.transform.position -= targetObject.transform.forward * y * playerController.moveSpeed * Time.deltaTime;
+						//targetObject.transform.position += targetObject.transform.right * x * playerController.moveSpeed * Time.deltaTime;
+					}
 					break;
 				case "singleTap":
 					playerController.shoot();
