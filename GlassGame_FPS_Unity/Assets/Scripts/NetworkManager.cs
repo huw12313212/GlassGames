@@ -85,7 +85,8 @@ public class NetworkManager : MonoBehaviour {
 
 			//Command may contain more than 1 command
 			string commandStr = encoder.GetString(message, 0, bytesRead);
-			//Debug.Log("Get Command:"+commandStr);
+
+			Debug.Log("Get Command:"+commandStr);
 
 			//parse to json object
 			JSONObject commandJsonObject = new JSONObject(commandStr);
@@ -135,11 +136,11 @@ public class NetworkManager : MonoBehaviour {
 					playerController.shoot();
 					Debug.Log("Single Tap!");
 					break;
-				case "soubleTap":
+				case "doubleTap":
 					Debug.Log("Double Tap!");
 					break;
-				case "fling":
-					Debug.Log("Fling!");
+				case "swipe":
+					Debug.Log("Swipe!");
 					break;
 				case "longPress":
 					Debug.Log("Long Press!");

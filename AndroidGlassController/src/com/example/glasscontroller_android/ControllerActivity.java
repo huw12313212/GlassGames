@@ -11,15 +11,14 @@ import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl.IAnalogOnScreenControlListener;
 import org.andengine.engine.camera.hud.controls.BaseOnScreenControl;
-import org.andengine.engine.handler.physics.PhysicsHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
-import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.input.touch.controller.MultiTouch;
+import org.andengine.input.touch.detector.SurfaceGestureDetectorAdapter;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
@@ -35,10 +34,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.opengl.GLES20;
-import android.support.v4.view.GestureDetectorCompat;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.widget.Toast;
 
 /**
@@ -48,12 +45,13 @@ import android.widget.Toast;
  * @author Nicolas Gramlich
  * @since 00:06:23 - 11.07.2010
  */
-public class ControllerActivity extends SimpleBaseGameActivity implements SensorEventListener,GestureDetector.OnGestureListener,
-GestureDetector.OnDoubleTapListener{
+public class ControllerActivity extends SimpleBaseGameActivity implements SensorEventListener{
 	// ===========================================================
 	// Constants
 	// ===========================================================
-
+	//AndEngine
+	public Scene mScene;
+	private SurfaceGestureDetectorAdapter surfaceGestureDetector;
 	private static final int CAMERA_WIDTH = 480;
 	private static final int CAMERA_HEIGHT = 320;
 	
@@ -75,10 +73,6 @@ GestureDetector.OnDoubleTapListener{
 	private float[] prevGyroValue = {0,0,0};
 	//private float[] prevMoveValue = {0,0};
 	
-	//gesture
-	private static final String DEBUG_TAG = "Gestures";
-	private GestureDetectorCompat mDetector; 
-	
 	// ===========================================================
 	// Fields
 	// ===========================================================
@@ -86,7 +80,7 @@ GestureDetector.OnDoubleTapListener{
 	private Camera mCamera;
 
 	private BitmapTextureAtlas mBitmapTextureAtlas;
-	private ITextureRegion mFaceTextureRegion;
+	//private ITextureRegion mFaceTextureRegion;
 
 	private BitmapTextureAtlas mOnScreenControlTexture;
 	private ITextureRegion mOnScreenControlBaseTextureRegion;
@@ -123,14 +117,11 @@ GestureDetector.OnDoubleTapListener{
 		} else {
 			Toast.makeText(this, "Sorry your device does NOT support MultiTouch!\n\n(Falling back to SingleTouch.)\n\nControls are placed at different vertical locations.", Toast.LENGTH_LONG).show();
 		}
-				
-		//init gesture detector
-		initGestureDector();
-				
+						
 		//get sensors
 		mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 		
-		//test
+		//register listener
 		mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),SensorManager.SENSOR_DELAY_FASTEST);  
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_FASTEST);  
         
@@ -154,15 +145,16 @@ GestureDetector.OnDoubleTapListener{
 		this.mOnScreenControlKnobTextureRegion = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mOnScreenControlTexture, this, "onscreen_control_knob.png", 128, 0);
 		this.mOnScreenControlTexture.load();
 	}
-
+	
 	@Override
 	public Scene onCreateScene() {
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
-		final Scene scene = new Scene();
-		scene.setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
+		mScene = new Scene();
+		mScene.setBackground(new Background(0.09804f, 0.6274f, 0.8784f));
 		
 		/*
+		//Face
 		final float centerX = (CAMERA_WIDTH - this.mFaceTextureRegion.getWidth()) / 2;
 		final float centerY = (CAMERA_HEIGHT - this.mFaceTextureRegion.getHeight()) / 2;
 		final Sprite face = new Sprite(centerX, centerY, this.mFaceTextureRegion, this.getVertexBufferObjectManager());
@@ -208,7 +200,7 @@ GestureDetector.OnDoubleTapListener{
 		velocityOnScreenControl.getControlBase().setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
 		velocityOnScreenControl.getControlBase().setAlpha(0.5f);
 
-		scene.setChildScene(velocityOnScreenControl);
+		mScene.setChildScene(velocityOnScreenControl);
 
 
 		/* Rotation control (right). */
@@ -236,24 +228,68 @@ GestureDetector.OnDoubleTapListener{
 		rotationOnScreenControl.getControlBase().setAlpha(0.5f);
 
 		velocityOnScreenControl.setChildScene(rotationOnScreenControl);
-
-		return scene;
+		
+		//set touch listener
+		this.mScene.setOnSceneTouchListener(this.surfaceGestureDetector);
+		
+		return mScene;
 	}
-
+	
+	@Override
+	protected void onCreate(final Bundle pSavedInstanceState){
+		super.onCreate(pSavedInstanceState);
+		setupGestureDetaction();
+	}
 	// ===========================================================
 	// Methods
 	// ===========================================================
 	
-	protected void initGestureDector(){
-		// Instantiate the gesture detector with the
-        // application context and an implementation of
-        // GestureDetector.OnGestureListener
-        mDetector = new GestureDetectorCompat(this,this);
-        // Set the gesture detector as the double tap
-        // listener.
-        mDetector.setOnDoubleTapListener(this);
-        
+	protected void setupGestureDetaction(){
+		//gesture detection
+		 surfaceGestureDetector = new SurfaceGestureDetectorAdapter(this) {         
+
+			 @Override
+	            protected boolean onSingleTap() {
+				 	clientThread.sendCommand(createDataJSONObject("command","singleTap"));
+	                return false;
+	            }
+
+	            @Override
+	            protected boolean onSwipeDown() {
+	            	clientThread.sendCommand(createDataJSONObject("command","swipe"));
+	                return false;
+	            }
+
+	            @Override
+	            protected boolean onSwipeLeft() {
+	            	clientThread.sendCommand(createDataJSONObject("command","swipe"));
+	                return false;
+	            }
+
+	            @Override
+	            protected boolean onSwipeRight() {
+	            	clientThread.sendCommand(createDataJSONObject("command","swipe"));
+	                return false;
+	            }
+
+	            @Override
+	            protected boolean onSwipeUp() {
+	            	clientThread.sendCommand(createDataJSONObject("command","swipe"));
+	                return false;
+	            }
+
+	            @Override
+	            protected boolean onDoubleTap() {
+	            	clientThread.sendCommand(createDataJSONObject("command","doubleTap"));
+	                return false;
+	            }
+	           
+	        };
+	        
+	        //enable
+		    surfaceGestureDetector.setEnabled(true);
 	}
+	
 	
 	protected JSONObject createDataJSONObject(String commandName,Object value){
 		//create json object
@@ -293,14 +329,14 @@ GestureDetector.OnDoubleTapListener{
         as possible*/  
         Log.d(TAG,"Register Listener!");
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE),SensorManager.SENSOR_DELAY_FASTEST);  
-        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_FASTEST);  
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_FASTEST);
     }
     
     //When this Activity isn't visible anymore  
     @Override  
     protected void onStop()  
     {  
-        //unregister the sensor listener  
+    	//unregister the sensor listener  
     	mSensorManager.unregisterListener(this);  
         super.onStop();  
     } 
@@ -354,80 +390,6 @@ GestureDetector.OnDoubleTapListener{
  			
  	}
  	
- 	//Gesture Detector
- 	@Override 
-     public boolean onTouchEvent(MotionEvent event){ 
-         this.mDetector.onTouchEvent(event);
-         // Be sure to call the superclass implementation
-         return super.onTouchEvent(event);
-     }
- 	
- 	@Override
- 	public boolean onDoubleTap(MotionEvent event) {
- 		// TODO Auto-generated method stub
- 		Log.d(DEBUG_TAG, "onDoubleTap: " + event.toString());
- 		clientThread.sendCommand(createDataJSONObject("command","doubleTap"));
- 	    return true;
- 	}
-
- 	@Override
- 	public boolean onDoubleTapEvent(MotionEvent event) {
- 		// TODO Auto-generated method stub
- 		Log.d(DEBUG_TAG, "onDoubleTapEvent: " + event.toString());
-         return true;
- 	}
-
- 	@Override
- 	public boolean onSingleTapConfirmed(MotionEvent event) {
- 		// TODO Auto-generated method stub
- 		Log.d(DEBUG_TAG, "onSingleTapConfirmed: " + event.toString());
- 		clientThread.sendCommand(createDataJSONObject("command","singleTap"));
- 	    return true;
- 	}
-
- 	@Override
- 	public boolean onDown(MotionEvent event) {
- 		// TODO Auto-generated method stub
- 		Log.d(DEBUG_TAG,"onDown: " + event.toString()); 
-         return true;
- 	}
-
- 	@Override
- 	public boolean onFling(MotionEvent event1, MotionEvent event2, float arg2,
- 			float arg3) {
- 		// TODO Auto-generated method stub
- 		Log.d(DEBUG_TAG, "onFling: " + event1.toString()+event2.toString());
- 		clientThread.sendCommand(createDataJSONObject("command","fling"));
-         return true;
- 	}
-
- 	@Override
- 	public void onLongPress(MotionEvent event) {
- 		// TODO Auto-generated method stub
- 		Log.d(DEBUG_TAG, "onLongPress: " + event.toString()); 
- 		clientThread.sendCommand(createDataJSONObject("command","longPress"));
- 	}
-
- 	@Override
- 	public boolean onScroll(MotionEvent event1, MotionEvent event2, float arg2,
- 			float arg3) {
- 		// TODO Auto-generated method stub
- 		 Log.d(DEBUG_TAG, "onScroll: " + event1.toString()+event2.toString());
- 	       return true;
- 	}
-
- 	@Override
- 	public void onShowPress(MotionEvent event) {
- 		// TODO Auto-generated method stub
- 		Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
- 	}
-
- 	@Override
- 	public boolean onSingleTapUp(MotionEvent event) {
- 		// TODO Auto-generated method stub
- 		Log.d(DEBUG_TAG, "onSingleTapUp: " + event.toString());
-         return true;
- 	}
 	// ===========================================================
 	// Inner and Anonymous Classes
 	// ===========================================================
