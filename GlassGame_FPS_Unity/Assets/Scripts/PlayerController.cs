@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 	public GameObject bullet;
+	public float moveSpeed = 5.0f;
 	// Use this for initialization
 	void Start () {
 

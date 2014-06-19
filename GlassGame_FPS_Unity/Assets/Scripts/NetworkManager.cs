@@ -17,6 +17,7 @@ public class NetworkManager : MonoBehaviour {
 	public GameObject targetObject;
 	public ArrayList commandList;
 	public PlayerController playerController;
+	public BotControlScript botControllScript;
 
 	// Use this for initialization
 	void Start () {
@@ -81,11 +82,15 @@ public class NetworkManager : MonoBehaviour {
 			//message has successfully been received
 			ASCIIEncoding encoder = new ASCIIEncoding();
 			//System.Diagnostics.Debug.WriteLine(encoder.GetString(message, 0, bytesRead));
+
+			//Command may contain more than 1 command
 			string commandStr = encoder.GetString(message, 0, bytesRead);
-			Debug.Log("Get Command:"+commandStr);
+			//Debug.Log("Get Command:"+commandStr);
 
 			//parse to json object
 			JSONObject commandJsonObject = new JSONObject(commandStr);
+
+			//Debug.Log("Get Command object:"+commandJsonObject);
 
 			//push to command list
 			commandList.Add (commandJsonObject);
@@ -104,26 +109,27 @@ public class NetworkManager : MonoBehaviour {
 		ArrayList tempCommandList = (ArrayList)commandList.Clone();
 
 		foreach (JSONObject commandObject in tempCommandList) {
+			//check
+			if(commandObject == null) continue;
+			else if(commandObject["command"] == null) continue;
+
 			//get command
 			string commandStr = commandObject["command"].str;
 
 			//check
 			if(commandStr == null) {
-				return;
+				continue;
 			}
 
 			switch (commandStr){
-				case "up":
-					targetObject.transform.position += targetObject.transform.forward * 20.0f * Time.deltaTime;
-					break;
-				case "down":
-					targetObject.transform.position -= targetObject.transform.forward * 20.0f * Time.deltaTime;
-					break;
-				case "right":
-					targetObject.transform.position += targetObject.transform.right * 20.0f * Time.deltaTime;
-					break;
-				case "left":
-					targetObject.transform.position -= targetObject.transform.right * 20.0f * Time.deltaTime;
+				case "move":
+					//get value
+					float x = (float)commandObject["x"].n;
+					float y = (float)commandObject["y"].n;
+					botControllScript.ControllerH = x;
+					botControllScript.ControllerV = -y;
+					//targetObject.transform.position -= targetObject.transform.forward * y * playerController.moveSpeed * Time.deltaTime;
+					//targetObject.transform.position += targetObject.transform.right * x * playerController.moveSpeed * Time.deltaTime;
 					break;
 				case "singleTap":
 					playerController.shoot();
@@ -139,10 +145,10 @@ public class NetworkManager : MonoBehaviour {
 					Debug.Log("Long Press!");
 					break;			
 				case "gyro":
-					Debug.Log("Gyro: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
+					//Debug.Log("Gyro: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
 					break;
 				case "accelerometer":
-					Debug.Log("Accelerometer: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
+					//Debug.Log("Accelerometer: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
 					break;
 				default:
 					Debug.Log("No such command:"+commandStr);

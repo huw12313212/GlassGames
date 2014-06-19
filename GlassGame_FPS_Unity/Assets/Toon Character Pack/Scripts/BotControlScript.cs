@@ -24,7 +24,10 @@ public class BotControlScript : MonoBehaviour
 	static int fallState = Animator.StringToHash("Base Layer.Fall");
 	static int rollState = Animator.StringToHash("Base Layer.Roll");
 	static int waveState = Animator.StringToHash("Layer2.Wave");
-	
+
+	//for controller
+	public float ControllerH = 0.0f;
+	public float ControllerV = 0.0f;
 
 	void Start ()
 	{
@@ -38,8 +41,8 @@ public class BotControlScript : MonoBehaviour
 	
 	void FixedUpdate ()
 	{
-		float h = Input.GetAxis("Horizontal");				// setup h variable as our horizontal input axis
-		float v = Input.GetAxis("Vertical");				// setup v variables as our vertical input axis
+		float h = Input.GetAxis("Horizontal") + ControllerH;				// setup h variable as our horizontal input axis
+		float v = Input.GetAxis("Vertical") + ControllerV;				// setup v variables as our vertical input axis
 		anim.SetFloat("Speed", v);							// set our animator's float parameter 'Speed' equal to the vertical input axis				
 		anim.SetFloat("Direction", h); 						// set our animator's float parameter 'Direction' equal to the horizontal input axis		
 		anim.speed = animSpeed;								// set the speed of our animator to the public variable 'animSpeed'

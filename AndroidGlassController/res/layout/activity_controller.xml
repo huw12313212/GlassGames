@@ -3,48 +3,5 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.androidglasscontroller.ControllerActivity"
-    tools:ignore="MergeRootFrame" >
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-        <Button
-            android:id="@+id/buttonUp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="107dp"
-            android:text="Up" />
-
-        <Button
-            android:id="@+id/buttonLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/buttonUp"
-            android:layout_marginTop="32dp"
-            android:layout_toLeftOf="@+id/buttonUp"
-            android:text="Left" />
-
-        <Button
-            android:id="@+id/buttonRight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/buttonLeft"
-            android:layout_toRightOf="@+id/buttonUp"
-            android:text="Right" />
-
-        <Button
-            android:id="@+id/buttonDown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/buttonLeft"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="32dp"
-            android:text="Down" />
-
-    </RelativeLayout>
-
-</FrameLayout>
+    tools:context="com.example.glasscontroller_android.ControllerActivity"
+    tools:ignore="MergeRootFrame" />

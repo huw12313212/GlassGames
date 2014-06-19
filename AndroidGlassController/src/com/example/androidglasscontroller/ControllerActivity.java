@@ -277,39 +277,39 @@ GestureDetector.OnDoubleTapListener {
 		}
 	}
 	
-	// on sensor data changed
-	public void onSensorChanged(SensorEvent event) {
-		//check sensor type
-		Sensor sensor = event.sensor;
-        if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            //TODO: get values
-        	float axisX = event.values[0];
-    	    float axisY = event.values[1];
-    	    float axisZ = event.values[2];
-    	    
-    	    //Log.d(TAG,"Rotation x:"+axisX+" y:"+axisY+" z:"+axisZ);
-    	    //send data to server
-    	    clientThread.sendCommand(createDataJSONObject(new String[]{"command","x","y","z"},new Object []{"gyro",axisX,axisY,axisZ}));
-    	    
-        }else if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            //TODO: get values
-        	float axisX = event.values[0];
-    	    float axisY = event.values[1];
-    	    float axisZ = event.values[2];
-    	    
-    	    //Log.d(TAG,"Rotation x:"+axisX+" y:"+axisY+" z:"+axisZ);
-    	    //send data to server
-    	    clientThread.sendCommand(createDataJSONObject(new String[]{"command","x","y","z"},new Object []{"accelerometer",axisX,axisY,axisZ}));
-    	    
-        }
-	}
-	
-	
-	@Override
-	public void onAccuracyChanged(Sensor arg0, int arg1) {
-		// TODO Auto-generated method stub
+		// on sensor data changed
+		public void onSensorChanged(SensorEvent event) {
+			//check sensor type
+			Sensor sensor = event.sensor;
+	        if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+	            //TODO: get values
+	        	float axisX = event.values[0];
+	    	    float axisY = event.values[1];
+	    	    float axisZ = event.values[2];
+	    	    
+	    	    //Log.d(TAG,"Rotation x:"+axisX+" y:"+axisY+" z:"+axisZ);
+	    	    //send data to server
+	    	    clientThread.sendCommand(createDataJSONObject(new String[]{"command","x","y","z"},new Object []{"gyro",axisX,axisY,axisZ}));
+	    	    
+	        }else if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+	            //TODO: get values
+	        	float axisX = event.values[0];
+	    	    float axisY = event.values[1];
+	    	    float axisZ = event.values[2];
+	    	    
+	    	    //Log.d(TAG,"Rotation x:"+axisX+" y:"+axisY+" z:"+axisZ);
+	    	    //send data to server
+	    	    clientThread.sendCommand(createDataJSONObject(new String[]{"command","x","y","z"},new Object []{"accelerometer",axisX,axisY,axisZ}));
+	    	    
+	        }
+		}
 		
-	}
+		
+		@Override
+		public void onAccuracyChanged(Sensor arg0, int arg1) {
+			// TODO Auto-generated method stub
+			
+		}
 	
 	//Gesture Detector
 	@Override 
