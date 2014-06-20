@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Text;
+using Parse;
 
 public class NetworkManager : MonoBehaviour {
 	
@@ -27,7 +28,33 @@ public class NetworkManager : MonoBehaviour {
 		this.listenThread = new Thread(new ThreadStart(ListenForClients));
 		this.listenThread.Start();
 
-		Debug.Log ("Server Start on:"+LocalIPAddress());
+		string localIP = LocalIPAddress ();
+
+		Debug.Log ("Server Start on:"+localIP);
+
+
+		ParseObject testObject = new ParseObject("GlassGame");
+		testObject["ip"] = localIP;
+		testObject.SaveAsync().ContinueWith(temp=>
+		                                    {
+
+			var query = ParseObject.GetQuery("GlassGame").OrderByDescending("createdAt").Limit(1);
+			query.FirstAsync().ContinueWith(t =>
+			                                {
+				ParseObject obj = t.Result;
+
+				Debug.Log("Insert Parse ip:"+obj["ip"]);
+				Debug.Log("Parse Date:"+obj.CreatedAt);
+			});
+
+		});
+
+
+
+
+	
+				
+
 	}
 
 	private void ListenForClients()
@@ -199,7 +226,7 @@ public class NetworkManager : MonoBehaviour {
 		{
 			if (ip.AddressFamily == AddressFamily.InterNetwork)
 			{
-				localIP = ip.ToString();
+				localIP += ip.ToString();
 				break;
 			}
 		}

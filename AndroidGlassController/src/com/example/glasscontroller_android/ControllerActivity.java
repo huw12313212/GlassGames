@@ -1,11 +1,11 @@
 package com.example.glasscontroller_android;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.camera.hud.controls.AnalogOnScreenControl;
@@ -38,6 +38,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.parse.GetCallback;
+import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 /**
  * (c) 2010 Nicolas Gramlich
  * (c) 2011 Zynga
@@ -60,10 +66,10 @@ public class ControllerActivity extends SimpleBaseGameActivity implements Sensor
 	//socket
 	private Socket socket;
 	private static final int SERVERPORT = 5566;
-	private static final String SERVER_IP = "10.5.0.114";
+	private String SERVER_IP = "10.0.1.10";
 		
 	//thread
-	public ClientThread clientThread;
+	public ClientThread clientThread = null;
 		
 	//sensors
 	private SensorManager mSensorManager;
@@ -126,9 +132,35 @@ public class ControllerActivity extends SimpleBaseGameActivity implements Sensor
         mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),SensorManager.SENSOR_DELAY_FASTEST);  
         
 		//client thread
-		clientThread = new ClientThread();
-		clientThread.start();
-				
+        
+        
+        Parse.initialize(this, "IskS4GIxxR4jeLgAFCoOkK72vONcE2ltu51DUxju", "lIz3JT8Omk7BqmIdBfjvvAbhf9ciEHp3O324k10n");
+        
+        ParseQuery<ParseObject> query =ParseQuery.getQuery("GlassGame").orderByDescending("createdAt");
+        query.setLimit(1);
+        
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+        	  public void done(ParseObject object, ParseException e) {
+        		  
+        	    if (object == null) {
+        	      Log.d("score", "The getFirst request failed.");
+        	      
+        	    } else {
+        	      Log.d("score", "Retrieved the object.");
+        	      
+        	      SERVER_IP = object.getString("ip");
+        	      
+        	      Log.d("ip",SERVER_IP);
+        	        
+        		  clientThread = new ClientThread();
+        		  clientThread.start();
+        					
+        	      
+        	    }
+        	  }
+        	});
+ 
+
 		return engineOptions;
 	}
 
@@ -186,7 +218,10 @@ public class ControllerActivity extends SimpleBaseGameActivity implements Sensor
 				
 				//Log.d(TAG,"Move Value:"+pValueX+" "+pValueY);
 				//send move command to server
-				clientThread.sendCommand(createDataJSONObject(new String[]{"command","x","y"},new Object []{"move",pValueX,pValueY}));
+				if(clientThread!=null)
+				{
+					clientThread.sendCommand(createDataJSONObject(new String[]{"command","x","y"},new Object []{"move",pValueX,pValueY}));
+				}
  	    	    
 				
 			}
@@ -214,7 +249,10 @@ public class ControllerActivity extends SimpleBaseGameActivity implements Sensor
 				} else {
 					//face.setRotation(MathUtils.radToDeg((float)Math.atan2(pValueX, -pValueY)));
 					float rotationAngle = MathUtils.radToDeg((float)Math.atan2(pValueX, -pValueY));
+					if(clientThread!=null)
+					{
 					clientThread.sendCommand(createDataJSONObject(new String[]{"command","angle"},new Object []{"rotate",rotationAngle}));
+					}
 	 	    	    
 				}
 			}
@@ -250,36 +288,42 @@ public class ControllerActivity extends SimpleBaseGameActivity implements Sensor
 
 			 @Override
 	            protected boolean onSingleTap() {
+				 if(clientThread!=null)
 				 	clientThread.sendCommand(createDataJSONObject("command","singleTap"));
 	                return false;
 	            }
 
 	            @Override
 	            protected boolean onSwipeDown() {
+	            	 if(clientThread!=null)
 	            	clientThread.sendCommand(createDataJSONObject("command","swipe"));
 	                return false;
 	            }
 
 	            @Override
 	            protected boolean onSwipeLeft() {
+	            	 if(clientThread!=null)
 	            	clientThread.sendCommand(createDataJSONObject("command","swipe"));
 	                return false;
 	            }
 
 	            @Override
 	            protected boolean onSwipeRight() {
+	            	 if(clientThread!=null)
 	            	clientThread.sendCommand(createDataJSONObject("command","swipe"));
 	                return false;
 	            }
 
 	            @Override
 	            protected boolean onSwipeUp() {
+	            	 if(clientThread!=null)
 	            	clientThread.sendCommand(createDataJSONObject("command","swipe"));
 	                return false;
 	            }
 
 	            @Override
 	            protected boolean onDoubleTap() {
+	            	 if(clientThread!=null)
 	            	clientThread.sendCommand(createDataJSONObject("command","doubleTap"));
 	                return false;
 	            }
@@ -354,6 +398,7 @@ public class ControllerActivity extends SimpleBaseGameActivity implements Sensor
  	    	    //Log.d(TAG,"Rotation x:"+axisX+" y:"+axisY+" z:"+axisZ);
  	    	   if((prevGyroValue[0] != axisX) || (prevGyroValue[1] != axisY) || (prevGyroValue[2] != axisZ)){
 	    	    	//send data to server
+ 	    		  if(clientThread!=null)
  	    		   clientThread.sendCommand(createDataJSONObject(new String[]{"command","x","y","z"},new Object []{"gyro",axisX,axisY,axisZ}));
  	 	    	    
 	    	    }
@@ -372,6 +417,7 @@ public class ControllerActivity extends SimpleBaseGameActivity implements Sensor
  	    	    //check same as prev or not
  	    	    if((prevAccValue[0] != axisX) || (prevAccValue[1] != axisY) || (prevAccValue[2] != axisZ)){
  	    	    	//send data to server
+ 	    	    	 if(clientThread!=null)
  	 	    	    clientThread.sendCommand(createDataJSONObject(new String[]{"command","x","y","z"},new Object []{"accelerometer",axisX,axisY,axisZ}));
  	 	    	    
  	    	    }
