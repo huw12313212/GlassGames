@@ -165,10 +165,7 @@ public class NetworkManager : MonoBehaviour {
 				case "move":
 					//check
 					if(commandObject!=null){
-						//check, bug here!
-						//if((commandObject["x"].n != null) || (commandObject["y"].n != null)){
-						//get value
-							
+
 						float x = 0.0f;
 						if((commandObject["x"]!=null) && (commandObject["x"].n != null)){
 							x = (float)commandObject["x"].n;
@@ -178,8 +175,10 @@ public class NetworkManager : MonoBehaviour {
 						if((commandObject["y"]!=null) && (commandObject["y"].n != null)){
 							y = (float)commandObject["y"].n;
 						}
-						botControllScript.ControllerH = x;
-						botControllScript.ControllerV = -y;
+
+
+					playerController.joyStickInput = new Vector2(x,-y);
+
 						//targetObject.transform.position -= targetObject.transform.forward * y * playerController.moveSpeed * Time.deltaTime;
 						//targetObject.transform.position += targetObject.transform.right * x * playerController.moveSpeed * Time.deltaTime;
 						//}
@@ -191,7 +190,7 @@ public class NetworkManager : MonoBehaviour {
 					break;
 				case "doubleTap":
 					Debug.Log("Double Tap!");
-					Application.Quit();
+					//Application.Quit();
 
 					break;
 				case "swipe":
@@ -206,6 +205,28 @@ public class NetworkManager : MonoBehaviour {
 				case "accelerometer":
 					//Debug.Log("Accelerometer: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
 					break;
+			case "rotate":
+				if(commandObject!=null){
+					
+					float x = 0.0f;
+					if((commandObject["x"]!=null) && (commandObject["x"].n != null)){
+						x = (float)commandObject["x"].n;
+					}
+					
+					float y = 0.0f;
+					if((commandObject["y"]!=null) && (commandObject["y"].n != null)){
+						y = (float)commandObject["y"].n;
+					}
+					
+					
+					playerController.joyStickInputRight = new Vector2(x,-y);
+					
+					//targetObject.transform.position -= targetObject.transform.forward * y * playerController.moveSpeed * Time.deltaTime;
+					//targetObject.transform.position += targetObject.transform.right * x * playerController.moveSpeed * Time.deltaTime;
+					//}
+				}
+				break;
+
 				default:
 					Debug.Log("No such command:"+commandStr);
 					break;

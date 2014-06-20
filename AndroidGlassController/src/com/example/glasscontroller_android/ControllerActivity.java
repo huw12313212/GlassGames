@@ -244,17 +244,15 @@ public class ControllerActivity extends SimpleBaseGameActivity implements Sensor
 		final AnalogOnScreenControl rotationOnScreenControl = new AnalogOnScreenControl(x2, y2, this.mCamera, this.mOnScreenControlBaseTextureRegion, this.mOnScreenControlKnobTextureRegion, 0.1f, this.getVertexBufferObjectManager(), new IAnalogOnScreenControlListener() {
 			@Override
 			public void onControlChange(final BaseOnScreenControl pBaseOnScreenControl, final float pValueX, final float pValueY) {
-				if(pValueX == x1 && pValueY == x1) {
-					//face.setRotation(x1);
-				} else {
+
 					//face.setRotation(MathUtils.radToDeg((float)Math.atan2(pValueX, -pValueY)));
 					float rotationAngle = MathUtils.radToDeg((float)Math.atan2(pValueX, -pValueY));
 					if(clientThread!=null)
 					{
-					clientThread.sendCommand(createDataJSONObject(new String[]{"command","angle"},new Object []{"rotate",rotationAngle}));
+						clientThread.sendCommand(createDataJSONObject(new String[]{"command","x","y"},new Object []{"rotate",pValueX,pValueY}));
 					}
 	 	    	    
-				}
+				
 			}
 
 			@Override
