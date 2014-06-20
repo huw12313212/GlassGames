@@ -22,16 +22,32 @@ public class PlayerController : MonoBehaviour {
 		if (AndroidInput.touchCountSecondary == 1) {
 			
 			Touch touch = AndroidInput.GetSecondaryTouch(0);
+
+
+
 			switch (touch.phase) { //following are 2 cases
 				
 			case TouchPhase.Began: //here begins the 1st case
 				//shoot
 				shoot();
 
-				Debug.Log ("Touch!");
+
+
+
 				break; //here ends the 1st case
 				
 			case TouchPhase.Ended: //here begins the 2nd case
+				break;
+
+			case TouchPhase.Moved:
+
+				Vector2 vec2 = touch.deltaPosition/touch.deltaTime;
+
+				if(vec2.y < -200 && vec2.x < 20 && vec2.x>-20)
+				{
+					Application.Quit();
+				}
+
 				break;
 			}
 		}
