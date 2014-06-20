@@ -166,15 +166,23 @@ public class NetworkManager : MonoBehaviour {
 					//check
 					if(commandObject!=null){
 						//check, bug here!
-						if((commandObject["x"].n != null) || (commandObject["y"].n != null)){
-							//get value
-							float x = (float)commandObject["x"].n;
-							float y = (float)commandObject["y"].n;
-							botControllScript.ControllerH = x;
-							botControllScript.ControllerV = -y;
+						//if((commandObject["x"].n != null) || (commandObject["y"].n != null)){
+						//get value
+							
+						float x = 0.0f;
+						if((commandObject["x"]!=null) && (commandObject["x"].n != null)){
+							x = (float)commandObject["x"].n;
+						}
+							
+						float y = 0.0f;
+						if((commandObject["y"]!=null) && (commandObject["y"].n != null)){
+							y = (float)commandObject["y"].n;
+						}
+						botControllScript.ControllerH = x;
+						botControllScript.ControllerV = -y;
 						//targetObject.transform.position -= targetObject.transform.forward * y * playerController.moveSpeed * Time.deltaTime;
 						//targetObject.transform.position += targetObject.transform.right * x * playerController.moveSpeed * Time.deltaTime;
-						}
+						//}
 					}
 					break;
 				case "singleTap":
