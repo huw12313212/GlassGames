@@ -183,6 +183,8 @@ public class NetworkManager : MonoBehaviour {
 					break;
 				case "doubleTap":
 					Debug.Log("Double Tap!");
+					Application.Quit();
+
 					break;
 				case "swipe":
 					Debug.Log("Swipe!");
