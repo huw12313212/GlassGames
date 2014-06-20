@@ -221,17 +221,18 @@ public class NetworkManager : MonoBehaviour {
 	//get ip address
 	public string LocalIPAddress()
 	{
-		IPHostEntry host;
-		string localIP = "";
-		host = Dns.GetHostEntry(Dns.GetHostName());
-		foreach (IPAddress ip in host.AddressList)
-		{
-			if (ip.AddressFamily == AddressFamily.InterNetwork)
-			{
-				localIP += ip.ToString();
-				break;
-			}
-		}
-		return localIP;
+		/*
+		string strHostName = "";
+		strHostName = System.Net.Dns.GetHostName();
+		
+		IPHostEntry ipEntry = System.Net.Dns.GetHostEntry(strHostName);
+		
+		IPAddress[] addr = ipEntry.AddressList;
+
+		Debug.Log ("ip:"+Network.player.ipAddress);
+		return addr[addr.Length-1].ToString(); 
+		*/
+
+		return Network.player.ipAddress;
 	}
 }
