@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour {
 	public GameObject offset;
 	public Camera camera;
 
+	public BulletShooter bulletShooter;
+
 
 
 	// Use this for initialization
@@ -86,8 +88,10 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void shoot(){
+
+		bulletShooter.singleFire = true;
 		//shoot
-		Instantiate(bullet,transform.position,transform.rotation);
+		//Instantiate(bullet,transform.position,transform.rotation);
 
 	}
 }
