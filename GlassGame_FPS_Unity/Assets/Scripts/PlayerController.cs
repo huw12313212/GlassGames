@@ -2,7 +2,6 @@
 using System.Collections;
 
 public class PlayerController : MonoBehaviour {
-	public GameObject bullet;
 	public float moveSpeed;
 	public float rotateSpeed;
 

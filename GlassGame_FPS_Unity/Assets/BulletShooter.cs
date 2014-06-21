@@ -17,10 +17,10 @@ public class BulletShooter : MonoBehaviour {
 	public float pushBackTime = 0.02f;
 	public float backTime = 0.5f;
 
+	public GameObject bullet;
+	public float bulletSpeed;
 
 	private bool flashing = false;
-
-
 	private float counter;
 
 
@@ -40,6 +40,7 @@ public class BulletShooter : MonoBehaviour {
 
 		counter = 0;
 
+		InitBulletAndShoot();
 	}
 	
 	// Update is called once per frame
@@ -53,6 +54,12 @@ public class BulletShooter : MonoBehaviour {
 		CheckShoot();
 		UpdatePowerBack();
 		UpdateFlash ();
+	}
+
+	void InitBulletAndShoot()
+	{
+		GameObject nowBullet = Instantiate(bullet,transform.position,transform.rotation) as GameObject;
+		nowBullet.rigidbody.velocity = transform.forward * bulletSpeed;
 	}
 
 	void UpdatePowerBack()
