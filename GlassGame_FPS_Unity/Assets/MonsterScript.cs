@@ -33,7 +33,7 @@ public class MonsterScript : MonoBehaviour
 
 	GameManager manager;
 	GameObject player;
-	BotControlScript playerScript;
+	//BotControlScript playerScript;
 
 	GameObject movingTarget;
 
@@ -41,6 +41,8 @@ public class MonsterScript : MonoBehaviour
 
 	public float pushBackValue = 20;
 	public float pushSpeed = 5;
+
+	public bool angry = true;
 
 	bool attack = false;
 
@@ -62,6 +64,8 @@ public class MonsterScript : MonoBehaviour
 
 	public void Hurt(int value)
 	{
+		angry = true;
+
 		if (hp < 0) 
 		{
 			return;
@@ -92,11 +96,12 @@ public class MonsterScript : MonoBehaviour
 
 		movingTarget = player;
 
-		playerScript = player.GetComponent<BotControlScript> ();
+//		playerScript = player.GetComponent<BotControlScript> ();
 	}
 
 	void MoveToTarget()
 	{
+		if (!angry)return;
 		//float h = Input.GetAxis("Horizontal");				// setup h variable as our horizontal input axis
 		
 		float MyRotate = transform.rotation.eulerAngles.y ;
@@ -220,7 +225,7 @@ public class MonsterScript : MonoBehaviour
 				{
 					attack = false;
 					Vector3 forward = transform.forward;
-					playerScript.Hurt(attackValue,forward);
+					//playerScript.Hurt(attackValue,forward);
 				}
 			}
 		}

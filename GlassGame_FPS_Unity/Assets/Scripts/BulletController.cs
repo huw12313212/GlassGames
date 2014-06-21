@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class BulletController : MonoBehaviour {
 	public float lifeTime = 3.0f;
 	private float alreadyLiveTime;
+	public int attackValue;
+
+	private List<Collider> contactList = new List<Collider>();
 	// Use this for initialization
 	void Start () {
 		//init
@@ -11,6 +15,20 @@ public class BulletController : MonoBehaviour {
 
 	}
 
+
+	void OnTriggerEnter(Collider other) 
+	{
+		if (contactList.Contains (other))return;
+
+		MonsterScript ms = other.gameObject.GetComponent<MonsterScript>();
+
+		if (ms) 
+		{
+			ms.Hurt(attackValue);
+		}
+
+		contactList.Add(other);
+	}
 
 	// Update is called once per frame
 	void Update () {
