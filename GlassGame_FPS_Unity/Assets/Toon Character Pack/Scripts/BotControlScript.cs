@@ -10,12 +10,22 @@ public class BotControlScript : MonoBehaviour
 	
 	public float animSpeed = 1.5f;				// a public setting for overall animator animation speed
 	public float lookSmoother = 3f;				// a smoothing setting for camera motion
+	public float moveSpeed = 1;
+	public GameObject rightHand;
 	
 	private Animator anim;							// a reference to the animator on the character
 	private AnimatorStateInfo currentBaseState;			// a reference to the current state of the animator, used for base layer
 	private AnimatorStateInfo layer2CurrentState;	// a reference to the current state of the animator, used for layer 2
 	private CapsuleCollider col;					// a reference to the capsule collider of the character
-	
+
+	public UISlider hpSlider;
+	public UISlider mpSlider;
+
+	public float MAX_MP = 100;
+	public float MP=100;
+	public float MAX_HP = 100;
+	public float HP = 100;
+
 
 	static int idleState = Animator.StringToHash("Base Layer.Idle");	
 	static int locoState = Animator.StringToHash("Base Layer.Locomotion");			// these integers are references to our animator's states
@@ -24,10 +34,36 @@ public class BotControlScript : MonoBehaviour
 	static int fallState = Animator.StringToHash("Base Layer.Fall");
 	static int rollState = Animator.StringToHash("Base Layer.Roll");
 	static int waveState = Animator.StringToHash("Layer2.Wave");
+	static int attackState = Animator.StringToHash("Base Layer.Attack");
+	static int hurtState = Animator.StringToHash("Base Layer.Hurt");
 
-	//for controller
-	public float ControllerH = 0.0f;
-	public float ControllerV = 0.0f;
+
+	public float pushBack = 0;
+	public float pushSpeed = 5;
+
+	public GameManager manager;
+
+
+	public void Hurt(int value,Vector3 vec)
+	{
+		if (HP < 0) 
+		{
+			return;
+		}
+		
+		HP -= value;
+		
+		anim.SetBool("Hurt", true);
+		
+		if (HP > 0) 
+		{
+			pushBack = 20;
+		}
+		pushVec = vec;
+	}
+
+	Vector3 pushVec;
+	
 
 	void Start ()
 	{
@@ -38,20 +74,123 @@ public class BotControlScript : MonoBehaviour
 			anim.SetLayerWeight(1, 1);
 	}
 	
-	
+
+	bool shoot = false;
+
+	void updateUI()
+	{
+		if (MP < MAX_MP) 
+		{
+			MP+= 5 * Time.deltaTime;
+		}
+
+		mpSlider.value = MP / MAX_MP;
+		hpSlider.value = HP / MAX_HP;
+	}
+
+	bool killed = false;
+
+	public void Dying()
+	{
+		anim.SetFloat("Speed", 0);							// set our animator's float parameter 'Speed' equal to the vertical input axis				
+		anim.SetFloat("Direction", 0); 
+		if (transform.rotation.eulerAngles.x > 270 || transform.rotation.eulerAngles.x <10) {
+			transform.Rotate (-2, 0, 0);
+			transform.Translate(0,-0.0005f,0);
+
+			if(!killed)
+			{
+			collider.enabled=false;
+			rigidbody.useGravity=false;
+			anim.enabled = false;
+			rigidbody.velocity = Vector3.zero;
+			manager.mainCamera.transform.parent = null;
+				Debug.Log("killed");
+				killed = true;
+			}
+			//\camera.transform.parent = null;
+
+			
+		}
+	}
+
 	void FixedUpdate ()
 	{
-		float h = Input.GetAxis("Horizontal") + ControllerH;				// setup h variable as our horizontal input axis
-		float v = Input.GetAxis("Vertical") + ControllerV;				// setup v variables as our vertical input axis
-		anim.SetFloat("Speed", v);							// set our animator's float parameter 'Speed' equal to the vertical input axis				
+		updateUI ();
+		if (HP <= 0)
+		{
+			Dying();
+			return;
+		}
+
+		if (pushBack > 0) 
+		{
+			pushBack--;
+			transform.position += pushVec * pushSpeed * Time.deltaTime;
+		}
+
+
+
+		float h = Input.GetAxis("Horizontal");				// setup h variable as our horizontal input axis
+		float v = Input.GetAxis("Vertical");				// setup v variables as our vertical input axis
+
+		if (v == 0 && h!=0) 
+		{
+			v = 0.2f;
+		}
+
+		anim.SetFloat("Speed", v*moveSpeed);							// set our animator's float parameter 'Speed' equal to the vertical input axis				
 		anim.SetFloat("Direction", h); 						// set our animator's float parameter 'Direction' equal to the horizontal input axis		
 		anim.speed = animSpeed;								// set the speed of our animator to the public variable 'animSpeed'
+
+
+	
+
 		currentBaseState = anim.GetCurrentAnimatorStateInfo(0);	// set our currentState variable to the current state of the Base Layer (0) of animation
 		
 		if(anim.layerCount ==2)		
 			layer2CurrentState = anim.GetCurrentAnimatorStateInfo(1);	// set our layer2CurrentState variable to the current state of the second Layer (1) of animation
 		
 				
+		bool attackPressed = Input.GetMouseButtonDown (0);
+
+		if (attackPressed&& MP>20) 
+		{
+			MP -= 20;
+
+			anim.SetBool("Attack",true);
+			shoot = true;
+		}
+
+		if (currentBaseState.nameHash == attackState)
+		{
+
+			if(!anim.IsInTransition(0))
+			{				
+				// reset the Jump bool so we can jump again, and so that the state does not loop 
+
+				if(shoot)
+				{
+					GameObject fireBall = GameObject.Instantiate(Resources.Load("FireBall")) as GameObject;
+					shoot = false;
+					fireBall.transform.position = rightHand.transform.position;
+					fireBall.transform.rotation = Quaternion.Euler(new Vector3(0,transform.rotation.eulerAngles.y+180,0));
+					FireBallScript fireBallScript = fireBall.GetComponent<FireBallScript>();
+
+
+					Vector3 shootV = transform.forward;
+					fireBallScript.Velicity = shootV * 8;
+
+				}
+
+
+
+
+
+				anim.SetBool("Attack", false);
+			}
+		}
+
 		// STANDARD JUMPING
 		
 		// if we are currently in a state called Locomotion, then allow Jump input (Space) to set the Jump bool parameter in the Animator to true
@@ -60,9 +199,13 @@ public class BotControlScript : MonoBehaviour
 			if(Input.GetButtonDown("Jump"))
 			{
 				anim.SetBool("Jump", true);
-				rigidbody.AddForce(Vector3.up*10);
+				rigidbody.AddForce(Vector3.up*200);
+			
+				rigidbody.velocity = new Vector3(0,100,0);
 			}
 		}
+
+
 		
 		// if we are in the jumping state... 
 		else if(currentBaseState.nameHash == jumpState)
@@ -122,20 +265,16 @@ public class BotControlScript : MonoBehaviour
 				
 			}
 		}
-		// IDLE
-		
-		// check if we are at idle, if so, let us Wave!
-		else if (currentBaseState.nameHash == idleState)
-		{
-			if(Input.GetButtonUp("Jump"))
-			{
-				anim.SetBool("Wave", true);
+
+
+		if (HP > 0) {
+			if (currentBaseState.nameHash == hurtState) {
+				
+				if (!anim.IsInTransition (0)) {				
+					anim.SetBool ("Hurt", false);
+				}
 			}
 		}
-		// if we enter the waving state, reset the bool to let us wave again in future
-		if(layer2CurrentState.nameHash == waveState)
-		{
-			anim.SetBool("Wave", false);
-		}
+		
 	}
 }
