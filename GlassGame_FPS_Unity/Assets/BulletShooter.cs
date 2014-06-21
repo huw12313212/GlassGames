@@ -23,6 +23,7 @@ public class BulletShooter : MonoBehaviour {
 	private bool flashing = false;
 	private float counter;
 
+	public crossHairAnimate crossHairControll;
 
 	// Use this for initialization
 	void Start () {
@@ -40,6 +41,7 @@ public class BulletShooter : MonoBehaviour {
 
 		counter = 0;
 
+		crossHairControll.shoot = true;
 		InitBulletAndShoot();
 	}
 	
