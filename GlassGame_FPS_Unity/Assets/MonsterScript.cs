@@ -64,7 +64,12 @@ public class MonsterScript : MonoBehaviour
 
 	public void Hurt(int value)
 	{
-		angry = true;
+
+		if (!angry)
+		{
+			transform.LookAt(player.transform.position);
+			angry = true;
+		}
 
 		if (hp < 0) 
 		{

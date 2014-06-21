@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour {
 	public GameObject offset;
 	public Camera camera;
 
-	public BulletShooter bulletShooter;
+	public WeaponManager weaponManager;
 	public float touchPadMoveSpeed;
 
 	public bool triggerTap = false;
@@ -109,7 +109,7 @@ public class PlayerController : MonoBehaviour {
 
 	public void shoot(){
 
-		bulletShooter.singleFire = true;
+		weaponManager.TriggerAttack ();
 		//shoot
 		//Instantiate(bullet,transform.position,transform.rotation);
 

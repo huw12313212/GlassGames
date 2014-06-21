@@ -18,7 +18,7 @@ public class NetworkManager : MonoBehaviour {
 	public GameObject targetObject;
 	public ArrayList commandList;
 	public PlayerController playerController;
-	public BotControlScript botControllScript;
+	//public BotControlScript botControllScript;
 
 	// Use this for initialization
 	void Start () {
@@ -190,6 +190,8 @@ public class NetworkManager : MonoBehaviour {
 					break;
 				case "doubleTap":
 					Debug.Log("Double Tap!");
+
+					playerController.weaponManager.SwitchWeapon();
 					//Application.Quit();
 
 					break;
