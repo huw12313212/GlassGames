@@ -12,7 +12,9 @@ public class PlayerController : MonoBehaviour {
 	public Camera camera;
 
 	public BulletShooter bulletShooter;
+	public float touchPadMoveSpeed;
 
+	public bool triggerTap = false;
 
 
 	// Use this for initialization
@@ -27,6 +29,8 @@ public class PlayerController : MonoBehaviour {
 		handleJoystick2();
 
 		handleTouch ();
+
+
 	}
 
 	void handleJoystick2()
@@ -50,6 +54,8 @@ public class PlayerController : MonoBehaviour {
 		gameObject.rigidbody.velocity = v * moveSpeed ;
 	}
 
+
+
 	void handleTouch(){
 
 		if (AndroidInput.touchCountSecondary == 1) {
@@ -62,29 +68,44 @@ public class PlayerController : MonoBehaviour {
 				
 			case TouchPhase.Began: //here begins the 1st case
 				//shoot
-				shoot();
+				//shoot();
 
-
+				triggerTap = true;
 
 
 				break; //here ends the 1st case
 				
 			case TouchPhase.Ended: //here begins the 2nd case
+
+				if(triggerTap)shoot();
+
+				triggerTap = false;
+
 				break;
 
 			case TouchPhase.Moved:
 
-				Vector2 vec2 = touch.deltaPosition/touch.deltaTime;
+				Vector2 delta = touch.deltaPosition;
 
-				if(vec2.y < -100 && vec2.x < 20 && vec2.x>-20)
+				if(delta.magnitude > 10)triggerTap = false;
+
+				if(delta.y < -10 && delta.x < 5 && delta.x>-5)
 				{
 					Application.Quit();
+
+				}
+				else 
+				{
+					Vector3 v = delta.x * camera.transform.forward * touchPadMoveSpeed;
+					v.y = 0;
+					rigidbody.velocity = v;
 				}
 
 				break;
 			}
 		}
 	}
+
 
 	public void shoot(){
 
