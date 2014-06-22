@@ -17,14 +17,26 @@ public class PlayerController : MonoBehaviour {
 	public bool triggerTap = false;
 
 
+	public float forwordRatio;
+	public float backRatio;
+
+	private float forwordPosition;
+	
+	private float backPosition;
+
+
 	// Use this for initialization
 	void Start () {
 
+		backPosition = AndroidInput.secondaryTouchWidth *backRatio;
+		forwordPosition = AndroidInput.secondaryTouchWidth *forwordRatio;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
+
+		handleMove();
 		handleJoystick();
 		handleJoystick2();
 
@@ -32,6 +44,51 @@ public class PlayerController : MonoBehaviour {
 
 
 	}
+
+	bool touched = false;
+	bool longpressed = false;
+
+	void handleMove()
+	{
+		if(touched)
+		{
+			if (touchCounter > 0) 
+			{
+				touchCounter-= Time.deltaTime;
+			} 
+			else 
+			{
+				if(triggerTap)
+				{
+					longpressed = true;
+					triggerTap = false;
+				}
+			}
+
+			if(longpressed)
+			{
+				if(lastTouch.position.x < backPosition)
+				{
+					joyStickInput.y = -1*touchPadMoveSpeed;
+				}
+				else if(lastTouch.position.x > backPosition)
+				{
+					joyStickInput.y = 1*touchPadMoveSpeed;
+				}
+				else
+				{
+					joyStickInput.y = 0;
+				}
+			}
+
+
+		}
+	}
+
+	public float moveDelay;
+	private float touchCounter = 0;
+
+	private Touch lastTouch;
 
 	void handleJoystick2()
 	{
@@ -62,15 +119,17 @@ public class PlayerController : MonoBehaviour {
 			
 			Touch touch = AndroidInput.GetSecondaryTouch(0);
 
-
+		
 
 			switch (touch.phase) { //following are 2 cases
 				
 			case TouchPhase.Began: //here begins the 1st case
 				//shoot
-				//shoot();
-
+				//shoot();	
+				touchCounter = moveDelay;
+				lastTouch = touch;
 				triggerTap = true;
+				touched=true;
 
 
 				break; //here ends the 1st case
@@ -80,6 +139,9 @@ public class PlayerController : MonoBehaviour {
 				if(triggerTap)shoot();
 
 				triggerTap = false;
+				touched = false;
+				joyStickInput.y = 0;
+				longpressed = false;
 
 				break;
 
@@ -87,24 +149,43 @@ public class PlayerController : MonoBehaviour {
 
 				Vector2 delta = touch.deltaPosition;
 
-				if(delta.magnitude > 10)triggerTap = false;
+				if(delta.magnitude > 15)
+				{
+					triggerTap = false;
+				}
 
-				if(delta.y < -10 && delta.x < 5 && delta.x>-5)
+				if(delta.y < -15 && delta.x < 5 && delta.x>-5)
 				{
 					Application.Quit();
 
 				}
-				else 
+				else if(delta.y > 15 && delta.x < 5 && delta.x>-5)
 				{
+					weaponManager.SwitchWeapon();
+					
+				}
+				else
+				{
+					/*
 					Vector3 v = delta.x * camera.transform.forward * touchPadMoveSpeed;
 					v.y = 0;
-					rigidbody.velocity = v;
+					rigidbody.velocity = v;*/
+
+					if(delta.x > 15 || delta.x <-15)
+					{
+						transform.transform.Rotate(new Vector3(0,delta.x*touchPadRotateSpeed,0));
+					}
 				}
+
+
 
 				break;
 			}
 		}
 	}
+
+	public float touchPadRotateSpeed;
+	private Vector3 axis = new Vector3(0,1,0);
 
 
 	public void shoot(){
