@@ -20,7 +20,7 @@ public class BluetoothManager : MonoBehaviour {
 
 		Bluetooth.Instance().Discoverable();
 
-		Invoke("Discover",3);
+		Invoke("Discover",60);
 		Debug.Log("" + Bluetooth.Instance().DeviceName());
 	}
 
@@ -33,7 +33,7 @@ public class BluetoothManager : MonoBehaviour {
 
 		if (!isConnected) 
 		{
-			Invoke("Discover",3);
+			Invoke("Discover",60);
 		}
 	}
 	
