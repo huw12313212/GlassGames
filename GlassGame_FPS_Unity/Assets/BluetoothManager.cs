@@ -24,6 +24,11 @@ public class BluetoothManager : MonoBehaviour {
 	{
 		
 		Bluetooth.Instance().Discoverable();
+
+		if (!isConnected) 
+		{
+			Invoke("Discover",3);
+		}
 	}
 	
 	// Update is called once per frame
