@@ -18,6 +18,8 @@ public class NetworkManager : MonoBehaviour {
 	public GameObject targetObject;
 	public ArrayList commandList;
 	public PlayerController playerController;
+
+	//public CNj
 	//public BotControlScript botControllScript;
 
 	// Use this for initialization
