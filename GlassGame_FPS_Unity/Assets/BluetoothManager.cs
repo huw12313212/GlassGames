@@ -5,16 +5,20 @@ public class BluetoothManager : MonoBehaviour {
 
 	private bool isEnabled = false;
 	private bool isConnected = false;
-	private string MACaddress = "BC:F5:AC:75:18:AD";
+//	private string MACaddress = "BC:F5:AC:75:18:AD";
 	private string result = "Fuck you\n";
 	private string Result = "";
 	private int count = 0;
 	// Use this for initialization
 	void Start () {
+		Debug.Log ("Discover");
+
 		isEnabled = Bluetooth.Instance().IsEnabled();
 		if(!isEnabled){
 			Bluetooth.Instance().EnableBluetooth();
 		}
+
+		Bluetooth.Instance().Discoverable();
 
 		Invoke("Discover",3);
 		Debug.Log("" + Bluetooth.Instance().DeviceName());
@@ -24,6 +28,8 @@ public class BluetoothManager : MonoBehaviour {
 	{
 		
 		Bluetooth.Instance().Discoverable();
+
+		Debug.Log("bluetooth discover!");
 
 		if (!isConnected) 
 		{
