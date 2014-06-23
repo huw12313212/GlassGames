@@ -53,6 +53,7 @@
      <Compile Include="Assets\CNJoystick\Scripts\SkeletonAnimator.cs" />
      <Compile Include="Assets\CommunicationManager.cs" />
      <Compile Include="Assets\GGestureManager.cs" />
+     <Compile Include="Assets\GyroManager.cs" />
      <Compile Include="Assets\JoystickManager.cs" />
      <Compile Include="Assets\NetworkManager.cs" />
      <Compile Include="Assets\Scripts\Bluetooth.cs" />

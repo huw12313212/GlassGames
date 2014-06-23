@@ -204,7 +204,8 @@ public class NetworkManager : MonoBehaviour {
 					Debug.Log("Long Press!");
 					break;			
 				case "gyro":
-					//Debug.Log("Gyro: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
+				Debug.Log("Gyro: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]+" w = "+commandObject["w"]);
+				Debug.Log("Acc: x = "+commandObject["accX"]+" y = "+commandObject["accY"]+" z = "+commandObject["accZ"]);
 					break;
 				case "accelerometer":
 					//Debug.Log("Accelerometer: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);

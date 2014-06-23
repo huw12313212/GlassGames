@@ -43,7 +43,7 @@ public class BluetoothManager : MonoBehaviour {
 		isConnected = Bluetooth.Instance().IsConnected();
 	}
 
-	void OnGUI(){
+	/*void OnGUI(){
 		if(!isConnected){
 			GUI.enabled = true;
 			if (GUI.Button(new Rect(0, 0, Screen.width / 3, Screen.height / 10), "Send"))
@@ -103,5 +103,5 @@ public class BluetoothManager : MonoBehaviour {
 		}
 
 
-	}
+	}*/
 }
