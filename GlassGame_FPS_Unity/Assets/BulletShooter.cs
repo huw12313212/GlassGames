@@ -23,6 +23,9 @@ public class BulletShooter : MonoBehaviour {
 	private bool flashing = false;
 	private float counter;
 
+	Quaternion targetGyro;
+	public float gyroLerpRatio;
+
 	public enum AimType
 	{
 		viewportCenter,
@@ -50,7 +53,7 @@ public class BulletShooter : MonoBehaviour {
 				break;
 			case AimType.phoneGun:
 				crossHairControll.gameObject.SetActive(false);
-
+				targetGyro = gunGyro.transform.localRotation;
 				break;
 			}
 		}
@@ -61,7 +64,17 @@ public class BulletShooter : MonoBehaviour {
 		if (aimType != AimType.phoneGun)
 						return;
 
-		gunGyro.transform.localRotation = q;
+		targetGyro = q;
+	}
+
+
+
+	public void updateGyro()
+	{
+		if (aimType != AimType.phoneGun)
+			return;
+
+		gunGyro.transform.localRotation = Quaternion.Slerp(gunGyro.transform.localRotation,targetGyro, gyroLerpRatio);
 	}
 
 	public crossHairAnimate crossHairControll;
@@ -97,6 +110,7 @@ public class BulletShooter : MonoBehaviour {
 		CheckShoot();
 		UpdatePowerBack();
 		UpdateFlash ();
+		updateGyro ();
 	}
 
 	void InitBulletAndShoot()
