@@ -19,6 +19,10 @@ public class GrenadeScript : MonoBehaviour {
 	private Vector3 initPosition;
 	private Quaternion initRotation;
 
+	public GrenadeBoomChecker boomChecker;
+
+	public int boomDamage = 100;
+
 	// Use this for initialization
 	void Start () {
 		initPosition = transform.localPosition;
@@ -51,6 +55,8 @@ public class GrenadeScript : MonoBehaviour {
 		particleSystem.transform.position = grenadeModel.transform.position;
 		Invoke ("back", backTime);
 
+		//trigger boom damage
+		boomChecker.hurtAllMonsterInRange (boomDamage);
 
 	}
 
