@@ -10,7 +10,7 @@ public class JoystickManager : MonoBehaviour {
 	public CNJoystick joystickLeft;
 	public CNJoystick joystickRight;
 
-	public NetworkManager networkManager;
+	public CommunicationManager communicationManager;
 
 	public bool test;
 
@@ -31,15 +31,7 @@ public class JoystickManager : MonoBehaviour {
 		commandJsonObject.AddField("x",vec3.x);
 		commandJsonObject.AddField("y",-(vec3.y));
 
-		if(Bluetooth.Instance().IsConnected()){
-			Bluetooth.Instance().Send(commandJsonObject.ToString());
-		}
-
-		if (networkManager.isConnected)
-		{
-			networkManager.Send(commandJsonObject.ToString());
-		}
-		
+		communicationManager.SendJson (commandJsonObject);
 	}
 
 	void rotated(Vector3 vec3){
@@ -48,16 +40,7 @@ public class JoystickManager : MonoBehaviour {
 		commandJsonObject.AddField("x",vec3.x);
 		commandJsonObject.AddField("y",-(vec3.y));
 		
-		if(Bluetooth.Instance().IsConnected()){
-			Bluetooth.Instance().Send(commandJsonObject.ToString());
-		}
-
-		
-		if (networkManager.isConnected)
-		{
-			networkManager.Send(commandJsonObject.ToString());
-		}
-		
+		communicationManager.SendJson (commandJsonObject);
 	}
 
 	void stopRotated(){
@@ -66,15 +49,7 @@ public class JoystickManager : MonoBehaviour {
 		commandJsonObject.AddField("x",0);
 		commandJsonObject.AddField("y",0);
 		
-		if(Bluetooth.Instance().IsConnected()){
-			Bluetooth.Instance().Send(commandJsonObject.ToString());
-		}
-
-		
-		if (networkManager.isConnected)
-		{
-			networkManager.Send(commandJsonObject.ToString());
-		}
+		communicationManager.SendJson (commandJsonObject);
 	}
 
 	void stopped(){
@@ -83,31 +58,16 @@ public class JoystickManager : MonoBehaviour {
 		commandJsonObject.AddField("x",0);
 		commandJsonObject.AddField("y",0);
 		
-		if(Bluetooth.Instance().IsConnected()){
-			Bluetooth.Instance().Send(commandJsonObject.ToString());
-		}
-
-		
-		if (networkManager.isConnected)
-		{
-			networkManager.Send(commandJsonObject.ToString());
-		}
+		communicationManager.SendJson (commandJsonObject);
 	}
+	
+
 
 
 
 	// Update is called once per frame
-	void Update () {
-		if (!playable) 
-		{
-			if(Bluetooth.Instance().IsConnected()||networkManager.isConnected)
-			{
-				playable = true;
-				joystickLeft.gameObject.SetActive(true);
-				joystickRight.gameObject.SetActive(true);
-			}
-		}
-
+	void Update () 
+	{
 		if (test) 
 		{
 			test = false;	
@@ -117,10 +77,7 @@ public class JoystickManager : MonoBehaviour {
 			commandJsonObject.AddField("x",0);
 			commandJsonObject.AddField("y",-1);
 			
-			if (networkManager.isConnected)
-			{
-				networkManager.Send(commandJsonObject.ToString());
-			}
+			communicationManager.SendJson (commandJsonObject);
 		}
 	}
 }
