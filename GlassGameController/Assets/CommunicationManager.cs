@@ -10,6 +10,13 @@ public class CommunicationManager : MonoBehaviour {
 	private bool playable = false;
 	public bool bluetoothSupport;
 
+	public bool Playable
+	{
+		get
+		{
+			return playable;
+		}
+	}
 
     void OnGUI()
 	{

@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\AimTypeController.cs" />
      <Compile Include="Assets\CNJoystick\Scripts\CN2DController.cs" />
      <Compile Include="Assets\CNJoystick\Scripts\CNCameraFollow.cs" />
      <Compile Include="Assets\CNJoystick\Scripts\CNCameraRelativeSetup.cs" />

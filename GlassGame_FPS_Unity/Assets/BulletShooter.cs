@@ -23,6 +23,47 @@ public class BulletShooter : MonoBehaviour {
 	private bool flashing = false;
 	private float counter;
 
+	public enum AimType
+	{
+		viewportCenter,
+		phoneGun,
+	}
+
+	public GameObject gunGyro;
+
+	private AimType _aimType = AimType.viewportCenter;
+	public AimType aimType 
+	{
+		get
+		{
+			return _aimType;
+		}
+		set
+		{
+			_aimType = value;
+
+			switch(value)
+			{
+			case AimType.viewportCenter:
+				crossHairControll.gameObject.SetActive(true);
+				gunGyro.transform.localRotation = Quaternion.Euler(new Vector3(0,270,90));
+				break;
+			case AimType.phoneGun:
+				crossHairControll.gameObject.SetActive(false);
+
+				break;
+			}
+		}
+	}
+
+	public void setGunGyro(Quaternion q)
+	{
+		if (aimType != AimType.phoneGun)
+						return;
+
+		gunGyro.transform.localRotation = q;
+	}
+
 	public crossHairAnimate crossHairControll;
 
 	// Use this for initialization

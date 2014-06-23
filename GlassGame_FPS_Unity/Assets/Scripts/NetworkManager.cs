@@ -18,6 +18,7 @@ public class NetworkManager : MonoBehaviour {
 	public GameObject targetObject;
 	public ArrayList commandList;
 	public PlayerController playerController;
+	public BulletShooter shooter;
 
 	//public CNj
 	//public BotControlScript botControllScript;
@@ -188,10 +189,10 @@ public class NetworkManager : MonoBehaviour {
 					break;
 				case "singleTap":
 					playerController.shoot();
-					Debug.Log("Single Tap!");
+					//Debug.Log("Single Tap!");
 					break;
 				case "doubleTap":
-					Debug.Log("Double Tap!");
+					//Debug.Log("Double Tap!");
 
 					playerController.weaponManager.SwitchWeapon();
 					//Application.Quit();
@@ -204,12 +205,41 @@ public class NetworkManager : MonoBehaviour {
 					Debug.Log("Long Press!");
 					break;			
 				case "gyro":
-				Debug.Log("Gyro: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]+" w = "+commandObject["w"]);
-				Debug.Log("Acc: x = "+commandObject["accX"]+" y = "+commandObject["accY"]+" z = "+commandObject["accZ"]);
-					break;
+
+				Quaternion q;
+				q.x = (float)commandObject["x"].n;
+				q.y = (float)commandObject["y"].n;
+				q.z = (float)commandObject["z"].n;
+				q.w = (float)commandObject["w"].n;
+
+				Debug.Log("gyro"+q);
+
+				shooter.setGunGyro(new Quaternion(q.x,q.y,-q.z,-q.w));
+
+				break;
 				case "accelerometer":
 					//Debug.Log("Accelerometer: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
 					break;
+				case "changeAimMode":
+
+			
+
+				string mode = commandObject["mode"].str;
+				Debug.Log("changeAimMode:"+mode);
+				if(mode.Equals("phoneGun"))
+				{
+					Debug.Log("changed");
+					shooter.aimType = BulletShooter.AimType.phoneGun;
+				}
+				else if(mode.Equals("viewportCenter"))
+				{
+					Debug.Log("changed");
+					shooter.aimType = BulletShooter.AimType.viewportCenter;
+				}
+
+				
+				//Debug.Log("Accelerometer: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
+				break;
 			case "rotate":
 				if(commandObject!=null){
 					
@@ -225,7 +255,9 @@ public class NetworkManager : MonoBehaviour {
 					
 					
 					playerController.joyStickInputRight = new Vector2(x,-y);
-					
+
+
+
 					//targetObject.transform.position -= targetObject.transform.forward * y * playerController.moveSpeed * Time.deltaTime;
 					//targetObject.transform.position += targetObject.transform.right * x * playerController.moveSpeed * Time.deltaTime;
 					//}
@@ -240,9 +272,14 @@ public class NetworkManager : MonoBehaviour {
 
 		//clear commands
 		commandList.RemoveRange (0, tempCommandList.Count);
+
 		//commandList.Clear();
 
 	}
+
+
+	private bool isInitQuaternion = false;
+	public Quaternion initQuaternion;
 
 	// Update is called once per frame
 	void Update () {

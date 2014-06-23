@@ -15,7 +15,7 @@ public class BluetoothGUI : MonoBehaviour
     {
 		if(!isConnected){
         //GUI.enabled = false;
-			GUI.enabled = true;
+			//GUI.enabled = true;
 	        GUI.TextField(new Rect(0+x, (Screen.height / 10) * 9, Screen.width, Screen.height / 10), Result);
 	        
 	        //Send Button
