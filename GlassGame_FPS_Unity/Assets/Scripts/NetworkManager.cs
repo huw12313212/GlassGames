@@ -212,7 +212,7 @@ public class NetworkManager : MonoBehaviour {
 				q.z = (float)commandObject["z"].n;
 				q.w = (float)commandObject["w"].n;
 
-				Debug.Log("gyro"+q);
+				//Debug.Log("gyro"+q);
 
 				shooter.setGunGyro(new Quaternion(q.x,q.y,-q.z,-q.w));
 
