@@ -25,7 +25,9 @@ public class CarController : MonoBehaviour {
 	private float backPosition;
 
 	public int collisionDamage = 100;
-	
+
+	private float rotateAngle;
+	private static float ROTATE_LIMIT = 40;
 	// Use this for initialization
 	void Start () {
 		
@@ -48,7 +50,11 @@ public class CarController : MonoBehaviour {
 	
 	bool touched = false;
 	bool longpressed = false;
-	
+
+	public void setRotateAngle(float angle){
+		rotateAngle = angle;
+	}
+
 	void handleMove()
 	{
 		if(touched)
@@ -111,9 +117,21 @@ public class CarController : MonoBehaviour {
 		Vector3 v = (joyStickInput.y * CurrentVec3);
 
 		//rotate
+		/*
 		float rotateValue = joyStickInput.x * rotateSpeed * Time.deltaTime;
 		gameObject.transform.Rotate (new Vector3 (0, rotateValue, 0));
-		
+		*/
+		//rotate
+		if (joyStickInput.y != 0) {
+			//check limit
+			if(Mathf.Abs(rotateAngle) > ROTATE_LIMIT){
+				if(rotateAngle>0)rotateAngle = ROTATE_LIMIT;
+				else rotateAngle = -ROTATE_LIMIT;
+			}
+
+			gameObject.transform.Rotate (new Vector3 (0, rotateAngle / 20, 0));
+		}
+
 		gameObject.rigidbody.velocity = v * moveSpeed ;
 	}
 	

@@ -18,6 +18,9 @@ public class NetworkManagerForCar : MonoBehaviour {
 	public GameObject targetObject;
 	public ArrayList commandList;
 	public CarController carController;
+
+	//test
+	public SteelController steelTarget;
 	
 	//public CNj
 	//public BotControlScript botControllScript;
@@ -204,7 +207,34 @@ public class NetworkManagerForCar : MonoBehaviour {
 				Debug.Log("Long Press!");
 				break;			
 			case "gyro":
-				//Debug.Log("Gyro: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
+				//Debug.Log("Gyro: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]+" w = "+commandObject["w"]);
+
+				Debug.Log("Acc: x = "+commandObject["accX"]+" y = "+commandObject["accY"]+" z = "+commandObject["accZ"]);
+
+				//rotate
+				float rotateAngle = 0.0f;
+				if((commandObject["accX"].n!=null) && (commandObject["accY"].n!=null)){
+					rotateAngle = -(Mathf.Atan2((float)commandObject["accX"].n,(float)commandObject["accY"].n)/Mathf.PI)*180;
+				}
+				//Debug.Log("Angle:"+rotateAngle);
+				if(carController!=null){
+					float tempAngle = rotateAngle;
+					//check
+					if(tempAngle<0){
+						tempAngle += 180;
+					}
+					else if(tempAngle>0){
+						tempAngle = -(180 - tempAngle);
+					}
+
+					carController.setRotateAngle(tempAngle);
+				}
+
+				if(steelTarget!=null)
+				{
+					steelTarget.setRotateAngle(rotateAngle);
+				}
+
 				break;
 			case "accelerometer":
 				//Debug.Log("Accelerometer: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
