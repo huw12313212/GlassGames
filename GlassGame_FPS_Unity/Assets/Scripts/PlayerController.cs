@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour {
 	public float forwordRatio;
 	public float backRatio;
 
+	public float tiltData;
+
 	private float forwordPosition;
 	
 	private float backPosition;
@@ -106,7 +108,7 @@ public class PlayerController : MonoBehaviour {
 		RotateVec3.y = 0;
 		RotateVec3.Normalize ();
 		
-		Vector3 v = (joyStickInput.y * CurrentVec3 + joyStickInput.x * RotateVec3);
+		Vector3 v = (joyStickInput.y * CurrentVec3 + (joyStickInput.x + tiltData) * RotateVec3);
 		
 		gameObject.rigidbody.velocity = v * moveSpeed ;
 	}
