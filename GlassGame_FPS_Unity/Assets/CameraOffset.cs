@@ -25,7 +25,7 @@ public class CameraOffset : MonoBehaviour {
 		Vector3 rotate = transform.localRotation.eulerAngles;
 		rotate.y = - (float)result + (float)targetRotationY;
 
-		transform.localRotation = Quaternion.Euler(  rotate);
+		transform.localRotation = Quaternion.Euler(rotate);
 
 	}
 
