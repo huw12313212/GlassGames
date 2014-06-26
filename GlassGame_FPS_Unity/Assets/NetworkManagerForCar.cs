@@ -190,13 +190,13 @@ public class NetworkManagerForCar : MonoBehaviour {
 				}
 				break;
 			case "singleTap":
-				carController.shoot();
+				//carController.shoot();
 				Debug.Log("Single Tap!");
 				break;
 			case "doubleTap":
 				Debug.Log("Double Tap!");
 				
-				carController.weaponManager.SwitchWeapon();
+				//carController.weaponManager.SwitchWeapon();
 				//Application.Quit();
 				
 				break;
@@ -213,8 +213,15 @@ public class NetworkManagerForCar : MonoBehaviour {
 
 				//rotate
 				float rotateAngle = 0.0f;
+
+				try{
 				if((commandObject["accX"].n!=null) && (commandObject["accY"].n!=null)){
 					rotateAngle = -(Mathf.Atan2((float)commandObject["accX"].n,(float)commandObject["accY"].n)/Mathf.PI)*180;
+				}
+				}
+				catch(System.NullReferenceException e)
+				{
+					Debug.Log("command:"+commandObject.ToString());
 				}
 				//Debug.Log("Angle:"+rotateAngle);
 				if(carController!=null){
@@ -232,7 +239,7 @@ public class NetworkManagerForCar : MonoBehaviour {
 
 				if(steelTarget!=null)
 				{
-					steelTarget.setRotateAngle(rotateAngle);
+					steelTarget.setRotateAngle(-rotateAngle);
 				}
 
 				break;
