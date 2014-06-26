@@ -229,12 +229,12 @@ public class NetworkManager : MonoBehaviour {
 				Debug.Log("changeAimMode:"+mode);
 				if(mode.Equals("phoneGun"))
 				{
-					Debug.Log("changed");
+//					Debug.Log("changed");
 					shooter.aimType = BulletShooter.AimType.phoneGun;
 				}
 				else if(mode.Equals("viewportCenter"))
 				{
-					Debug.Log("changed");
+					//Debug.Log("changed");
 					shooter.aimType = BulletShooter.AimType.viewportCenter;
 				}
 

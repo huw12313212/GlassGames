@@ -19,6 +19,7 @@ public class BulletShooter : MonoBehaviour {
 
 	public GameObject bullet;
 	public float bulletSpeed;
+	public GameObject aimPlane;
 
 	private bool flashing = false;
 	private float counter;
@@ -55,6 +56,7 @@ public class BulletShooter : MonoBehaviour {
 				gunGyro.transform.localRotation = Quaternion.Euler(new Vector3(0,270,90));
 				gyroOffset.transform.localRotation = Quaternion.Euler(new Vector3(0,0,0));
 				DynamicCrossHairController.Reset();
+				aimPlane.SetActive(false);
 				
 				DynamicCrossHairController.enabled = false;
 				break;
@@ -62,7 +64,7 @@ public class BulletShooter : MonoBehaviour {
 				//crossHairControll.gameObject.SetActive(false);
 				targetGyro = gunGyro.transform.localRotation;
 
-				
+				aimPlane.SetActive(true);
 				DynamicCrossHairController.enabled = true;
 
 				break;

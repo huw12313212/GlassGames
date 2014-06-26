@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour {
 				nextTimer = 5;
 
 				Wave++;
-				enemyNumber = 2;
+				enemyNumber = 1;
 
 				for(int i = 0; i<enemyNumber;i++)
 				{
