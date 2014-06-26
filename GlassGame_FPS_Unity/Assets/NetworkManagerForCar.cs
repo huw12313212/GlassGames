@@ -232,7 +232,7 @@ public class NetworkManagerForCar : MonoBehaviour {
 
 				if(steelTarget!=null)
 				{
-					steelTarget.setRotateAngle(rotateAngle);
+					steelTarget.setRotateAngle(-rotateAngle);
 				}
 
 				break;
