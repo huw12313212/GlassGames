@@ -215,7 +215,7 @@ public class NetworkManager : MonoBehaviour {
 				//Debug.Log("gyro"+q);
 
 				shooter.setGunGyro(new Quaternion(q.x,q.y,-q.z,-q.w));
-				Debug.Log("Accelerometer: x = "+commandObject["accX"].n+" y = "+commandObject["accY"].n+" z = "+commandObject["accZ"].n);
+//				Debug.Log("Accelerometer: x = "+commandObject["accX"].n+" y = "+commandObject["accY"].n+" z = "+commandObject["accZ"].n);
 
 				break;
 				case "accelerometer":

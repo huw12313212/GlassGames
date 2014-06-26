@@ -27,6 +27,7 @@ public class BulletShooter : MonoBehaviour {
 	public float gyroLerpRatio;
 
 	public GameObject gyroOffset;
+	public DynamicCrossHairController DynamicCrossHairController;
 
 	public enum AimType
 	{
@@ -51,12 +52,19 @@ public class BulletShooter : MonoBehaviour {
 			switch(value)
 			{
 			case AimType.viewportCenter:
-				crossHairControll.gameObject.SetActive(true);
 				gunGyro.transform.localRotation = Quaternion.Euler(new Vector3(0,270,90));
+				gyroOffset.transform.localRotation = Quaternion.Euler(new Vector3(0,0,0));
+				DynamicCrossHairController.Reset();
+				
+				DynamicCrossHairController.enabled = false;
 				break;
 			case AimType.phoneGun:
 				//crossHairControll.gameObject.SetActive(false);
 				targetGyro = gunGyro.transform.localRotation;
+
+				
+				DynamicCrossHairController.enabled = true;
+
 				break;
 			}
 		}
