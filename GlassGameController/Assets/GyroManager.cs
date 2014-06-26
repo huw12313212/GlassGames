@@ -7,6 +7,8 @@ public class GyroManager : MonoBehaviour {
 
 	public float counter =0;
 
+	public bool Transfering;
+
 	public CommunicationManager communicationManager;
 
 	// Use this for initialization
@@ -17,34 +19,39 @@ public class GyroManager : MonoBehaviour {
 	}
 
 	public Quaternion lastQ;
+
+
+	public Vector3 lastAcc;
+
 	
 	// Update is called once per frame
 	void Update () {
 
-		counter += Time.deltaTime;
+		lastQ = Input.gyro.attitude;
+		lastAcc = Input.acceleration;
 
-		Quaternion rotation = Input.gyro.attitude;
-		Vector3 acc = Input.acceleration;
+		if (Transfering) {
 
-		if(counter>updateRate)
-		{
-			counter = 0;
-			lastQ = rotation;
+			counter += Time.deltaTime;
 
-			JSONObject json = new JSONObject();
-			json.AddField("command","gyro");
-			json.AddField("x",lastQ.x);
-			json.AddField("y",lastQ.y);
-			json.AddField("z",lastQ.z);
-			json.AddField("w",lastQ.w);
-			json.AddField("accX",acc.x);
-			json.AddField("accY",acc.y);
-			json.AddField("accZ",acc.z);
-			communicationManager.SendJson(json);
+						if (counter > updateRate) {
+								counter = 0;
+
+								JSONObject json = new JSONObject ();
+								json.AddField ("command", "gyro");
+								json.AddField ("x", lastQ.x);
+								json.AddField ("y", lastQ.y);
+								json.AddField ("z", lastQ.z);
+								json.AddField ("w", lastQ.w);
+								json.AddField ("accX", lastAcc.x);
+								json.AddField ("accY", lastAcc.y);
+								json.AddField ("accZ", lastAcc.z);
+								communicationManager.SendJson (json);
 
 
-		}
+						}
 
+				}
 
 	}
 }
