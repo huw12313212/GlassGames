@@ -190,13 +190,13 @@ public class NetworkManagerForCar : MonoBehaviour {
 				}
 				break;
 			case "singleTap":
-				carController.shoot();
+				//carController.shoot();
 				Debug.Log("Single Tap!");
 				break;
 			case "doubleTap":
 				Debug.Log("Double Tap!");
 				
-				carController.weaponManager.SwitchWeapon();
+				//carController.weaponManager.SwitchWeapon();
 				//Application.Quit();
 				
 				break;
