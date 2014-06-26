@@ -213,8 +213,15 @@ public class NetworkManagerForCar : MonoBehaviour {
 
 				//rotate
 				float rotateAngle = 0.0f;
+
+				try{
 				if((commandObject["accX"].n!=null) && (commandObject["accY"].n!=null)){
 					rotateAngle = -(Mathf.Atan2((float)commandObject["accX"].n,(float)commandObject["accY"].n)/Mathf.PI)*180;
+				}
+				}
+				catch(System.NullReferenceException e)
+				{
+					Debug.Log("command:"+commandObject.ToString());
 				}
 				//Debug.Log("Angle:"+rotateAngle);
 				if(carController!=null){
