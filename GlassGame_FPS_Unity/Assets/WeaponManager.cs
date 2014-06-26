@@ -21,6 +21,7 @@ public class WeaponManager : MonoBehaviour {
 		handGun,
 		handGrenade,
 		knife,
+		light,
 	}
 
 	public void SwitchWeapon()
@@ -39,10 +40,17 @@ public class WeaponManager : MonoBehaviour {
 		{
 			CrossHairController.gameObject.SetActive(true);
 			CrossHairController.Reset();
+			bulletShooter.weaponType = BulletShooter.WeaponType.gun;
 		}
 		else if(weaponType == WeaponType.handGun)
 		{
 			CrossHairController.gameObject.SetActive(false);
+		}
+		else if(weaponType == WeaponType.light)
+		{
+			CrossHairController.gameObject.SetActive(true);
+			CrossHairController.Reset();
+			bulletShooter.weaponType = BulletShooter.WeaponType.flashLight;
 		}
 
 		weaponRoot[currentWeaponIndex].SetActive(true);

@@ -39,7 +39,6 @@ public class KnifeController : MonoBehaviour {
 	{
 		inRanged.Add(other);
 
-		Debug.Log (other.name +" in");
 	}
 
 
@@ -47,7 +46,6 @@ public class KnifeController : MonoBehaviour {
 	{
 		inRanged.Remove(other);
 
-		Debug.Log (other.name +" out");
 	}
 
 	public void AttackAllInRanged()

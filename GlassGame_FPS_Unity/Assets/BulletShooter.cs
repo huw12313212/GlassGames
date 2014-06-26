@@ -36,6 +36,40 @@ public class BulletShooter : MonoBehaviour {
 		phoneGun,
 	}
 
+	public enum WeaponType
+	{
+		gun,
+		flashLight,
+	}
+
+	private WeaponType _weaponType = WeaponType.gun;
+	public WeaponType weaponType
+	{
+		get
+		{
+			return _weaponType;
+		}
+		set
+		{
+			_weaponType = value;
+
+			if(_weaponType==WeaponType.flashLight)
+			{
+				gunObject.SetActive(false);
+				flashLightObject.SetActive(true);
+			}
+			else if(_weaponType == WeaponType.gun)
+			{
+				gunObject.SetActive(true);
+				flashLightObject.SetActive(false);
+			}
+		}
+	} 
+
+	public GameObject gunObject;
+	public GameObject flashLightObject;
+
+
 	public GameObject gunGyro;
 	public Camera mainCamera;
 
@@ -165,6 +199,8 @@ public class BulletShooter : MonoBehaviour {
 	{
 		if (firing||singleFire) 
 		{
+			if(weaponType != WeaponType.gun)return;
+
 			if(counter>=shootDuration)
 			{
 				TriggerShoot();

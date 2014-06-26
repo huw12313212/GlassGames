@@ -6,6 +6,7 @@ public class GGestureManager : MonoBehaviour {
 
 
 	public GameObject TouchPanel;
+	public FlickGesture flickGesture;
 	public CommunicationManager communicationManager;
 	
 	// Use this for initialization
@@ -33,6 +34,27 @@ public class GGestureManager : MonoBehaviour {
 				};
 			}
 		}
+
+
+		flickGesture.Flicked += (object sender, System.EventArgs e) => 
+		{
+
+			Debug.Log("flicked:"+flickGesture.ScreenFlickVector);
+
+			//flickGesture.scree
+
+			if(flickGesture.ScreenFlickVector.x>0)
+			{
+
+			}
+			else if(flickGesture.ScreenFlickVector.x<0)
+			{
+
+			}
+
+
+			//Debug.Log();
+		};
 
 		/*
 		singleTapGesture.Tapped += (object sender, System.EventArgs e) => 
