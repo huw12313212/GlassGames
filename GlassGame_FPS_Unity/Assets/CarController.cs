@@ -129,6 +129,8 @@ public class CarController : MonoBehaviour {
 				else rotateAngle = -ROTATE_LIMIT;
 			}
 
+			if( double.IsNaN(rotateAngle))return;
+
 			gameObject.transform.Rotate (new Vector3 (0, rotateAngle / 20, 0));
 		}
 

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SteelController : MonoBehaviour {
 
-	private float rotateAngle;
+	private float rotateAngle = 180;
 	public float rotateRatio = 0.3f;
 	// Use this for initialization
 	void Start () {
