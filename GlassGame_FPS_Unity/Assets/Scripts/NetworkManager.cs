@@ -149,6 +149,7 @@ public class NetworkManager : MonoBehaviour {
 		}
 
 		ArrayList tempCommandList = (ArrayList)commandList.Clone();
+		commandList.RemoveRange (0, tempCommandList.Count);
 
 		foreach (JSONObject commandObject in tempCommandList) {
 			//Debug.Log("Command Object:"+commandObject.ToString());
@@ -272,7 +273,7 @@ public class NetworkManager : MonoBehaviour {
 		}
 
 		//clear commands
-		commandList.RemoveRange (0, tempCommandList.Count);
+
 
 		//commandList.Clear();
 

@@ -11,6 +11,9 @@ public class GrenadeScript : MonoBehaviour {
 	public GameObject particleSystem;
 	public GameObject grenadeModel;
 
+	public Animation animation;
+
+
 	public WeaponManager weaponManager;
 
 	public bool ready = true;
@@ -18,6 +21,7 @@ public class GrenadeScript : MonoBehaviour {
 
 	private Vector3 initPosition;
 	private Quaternion initRotation;
+	private Transform initParent;
 
 	public GrenadeBoomChecker boomChecker;
 
@@ -25,26 +29,34 @@ public class GrenadeScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		initPosition = transform.localPosition;
-		initRotation = transform.localRotation;
+		initPosition = grenadeModel.transform.localPosition;
+		initRotation = grenadeModel.transform.localRotation;
+		initParent = grenadeModel.transform.parent;
 	}
 
 
 	public void back()
 	{
 		particleSystem.SetActive(false);
-
-		if (weaponManager.weaponType == WeaponManager.WeaponType.handGrenade) 
-		{
-			grenadeModel.SetActive (true);
-		}
+		grenadeModel.SetActive (true);
 		grenadeModel.rigidbody.isKinematic = true;
 		grenadeModel.rigidbody.useGravity = false;
-		grenadeModel.transform.parent = transform;
+		grenadeModel.transform.parent = initParent;
 		grenadeModel.transform.localPosition = initPosition;
 		grenadeModel.transform.localRotation = initRotation;
+
+		animation.Play("Walk Grenade01Mobile");
+
+		Invoke ("done", 0.05f);
+	}
+
+	public void done()
+	{	
+		animation.Stop ();
+		
 		//grenadeModel.rigidbody.velocity = Vector3.zero;
 		ready = true;
+
 	}
 
 	public void boom()
@@ -65,15 +77,31 @@ public class GrenadeScript : MonoBehaviour {
 		if (ready) 
 		{
 			ready = false;
-			grenadeModel.transform.parent = null;
-			Vector3 v3 = camera.transform.forward * speed;
-			grenadeModel.rigidbody.isKinematic = false;
-			grenadeModel.rigidbody.useGravity = true;
-			grenadeModel.rigidbody.velocity = v3;
 
-			Invoke ("boom", boomTime);
+			preAnimation();
+
 		}
 
+	}
+
+	public void preAnimation()
+	{
+		animation.Play("ThrowGrenade Grenade01Mobile");
+
+		Invoke ("throwAway",animationTime);
+	}
+
+	public float animationTime;
+
+	public void throwAway()
+	{
+		grenadeModel.transform.parent = null;
+		Vector3 v3 = camera.transform.forward * speed;
+		grenadeModel.rigidbody.isKinematic = false;
+		grenadeModel.rigidbody.useGravity = true;
+		grenadeModel.rigidbody.velocity = v3;
+		
+		Invoke ("boom", boomTime);
 	}
 
 

@@ -12,6 +12,7 @@ public class WeaponManager : MonoBehaviour {
 	//Weapon Script
 	public BulletShooter bulletShooter;
 	public GrenadeScript grenadeThrower;
+	public DynamicCrossHairController CrossHairController;
 
 
 	public enum WeaponType
@@ -22,22 +23,27 @@ public class WeaponManager : MonoBehaviour {
 
 	public void SwitchWeapon()
 	{
-		if (weaponType == WeaponType.handGrenade)
-		{
-			if(grenadeThrower.ready)
-			{
-			weaponRoot [currentWeaponIndex].SetActive (false);
-			}
-		}
-		else
-		{
-			weaponRoot [currentWeaponIndex].SetActive (false);
-		}
+
+		weaponRoot [currentWeaponIndex].SetActive (false);
 
 		currentWeaponIndex = (currentWeaponIndex + 1) % weaponRoot.Count;
-
-		weaponRoot [currentWeaponIndex].SetActive (true);
 		weaponType = (WeaponType)currentWeaponIndex;
+
+		if (weaponType == WeaponType.handGrenade)
+		{
+			CrossHairController.gameObject.SetActive(false);
+		}
+		else if(weaponType == WeaponType.handGun)
+		{
+			CrossHairController.gameObject.SetActive(true);
+			CrossHairController.Reset();
+		}
+
+
+
+
+		weaponRoot[currentWeaponIndex].SetActive(true);
+
 	}
 
 	public void TriggerAttack()
