@@ -31,7 +31,7 @@ public class WeaponManager : MonoBehaviour {
 		}
 		else
 		{
-		weaponRoot [currentWeaponIndex].SetActive (false);
+			weaponRoot [currentWeaponIndex].SetActive (false);
 		}
 
 		currentWeaponIndex = (currentWeaponIndex + 1) % weaponRoot.Count;

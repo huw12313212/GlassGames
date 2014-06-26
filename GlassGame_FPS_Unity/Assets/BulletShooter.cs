@@ -55,7 +55,7 @@ public class BulletShooter : MonoBehaviour {
 				gunGyro.transform.localRotation = Quaternion.Euler(new Vector3(0,270,90));
 				break;
 			case AimType.phoneGun:
-				crossHairControll.gameObject.SetActive(false);
+				//crossHairControll.gameObject.SetActive(false);
 				targetGyro = gunGyro.transform.localRotation;
 				break;
 			}
