@@ -56,6 +56,12 @@
  <Reference Include="Parse.Unity">
  <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/Parse.Unity.dll</HintPath>
  </Reference>
+ <Reference Include="HOTween">
+ <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/HOTween/Plugins/HOTween.dll</HintPath>
+ </Reference>
+ <Reference Include="HOTweenV1_Editor">
+ <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/HOTween/Plugins/Editor/HOTweenV1_Editor.dll</HintPath>
+ </Reference>
  <Reference Include="TouchScript.Editor">
  <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/TouchScript/Editor/TouchScript.Editor.dll</HintPath>
  </Reference>
@@ -64,12 +70,6 @@
  </Reference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>/Applications/Unity/Unity.app/Contents/Frameworks/Managed/UnityEditor.Graphs.dll</HintPath>
- </Reference>
- <Reference Include="HOTweenV1_Editor">
- <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/HOTween/Plugins/Editor/HOTweenV1_Editor.dll</HintPath>
- </Reference>
- <Reference Include="HOTween">
- <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/HOTween/Plugins/HOTween.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>

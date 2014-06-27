@@ -28,6 +28,7 @@ public class BulletShooter : MonoBehaviour {
 	public float gyroLerpRatio;
 
 	public GameObject gyroOffset;
+	public GameObject cameraOffset;
 	public DynamicCrossHairController DynamicCrossHairController;
 
 	public enum AimType
@@ -128,7 +129,9 @@ public class BulletShooter : MonoBehaviour {
 		Vector3 vec3 = mainCamera.transform.forward;
 		double data = Mathf.Atan2(vec3.x,vec3.z);
 		double result = data / Mathf.PI * 180;
-		temp.z = (float)result;
+		temp.z = (float)result - cameraOffset.transform.localRotation.eulerAngles.y;
+
+		//Debug.Log ("camera offset:"+cameraOffset.transform.localRotation.eulerAngles.y);
 
 		gyroOffset.transform.localRotation = Quaternion.Euler(temp);
 		//gunGyro.transform.RotateAround (new Vector3 (0, 1, 0), -mainCamera.transform.localRotation.eulerAngles.y);

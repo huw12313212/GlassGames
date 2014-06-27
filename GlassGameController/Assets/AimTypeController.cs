@@ -27,6 +27,13 @@ public class AimTypeController : MonoBehaviour {
 	}
 
 	private AimType _aimType = AimType.viewportCenter;
+	public AimType aimType
+	{
+		get
+		{
+			return _aimType;
+		}
+	}
 
 	//public voi
 
@@ -57,6 +64,12 @@ public class AimTypeController : MonoBehaviour {
 						changeToViewPortMode();
 					}
 				}
+			}
+
+			if(forceChangeMode)
+			{
+				ForceChangeMode();
+				forceChangeMode = false;
 			}
 		}
 
@@ -137,5 +150,29 @@ public class AimTypeController : MonoBehaviour {
 			}
 
 		}
+	}
+
+	public bool forceChangeMode = false;
+
+	public void ForceChangeMode()
+	{
+
+			if (_aimType == AimType.viewportCenter) 
+			{
+				//if (GUI.Button(new Rect(Screen.width-100, 0, 100, 100), "change to gun"))
+				{
+					changeToGunMode();
+				}
+				
+			} 
+			else if (_aimType == AimType.phoneGun) 
+			{
+				//if (GUI.Button(new Rect(Screen.width-100, 0, 100, 100), "change to viewport"))
+				{
+					
+					changeToViewPortMode();
+				}	
+			}
+
 	}
 }

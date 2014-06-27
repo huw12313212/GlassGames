@@ -23,7 +23,10 @@ public class GGestureManager : MonoBehaviour {
 
 	public EaseType easeType;
 
+	public AimTypeController aimTypeController;
 
+	public List<Vector3> WeaponOffsets;
+	public List<Vector3> WeaponRotates;
 
 	public enum WeaponType
 	{
@@ -109,6 +112,8 @@ public class GGestureManager : MonoBehaviour {
 		{
 			changeToPreviousWeapon();
 		};
+
+		aimTypeController.AimTypeChangeEvent += AimModeChanging;
 	}
 
 	private void changeToNextWeapon()
@@ -116,7 +121,8 @@ public class GGestureManager : MonoBehaviour {
 		if (WeaponChanging)
 						return;
 
-
+		if (aimTypeController.aimType == AimTypeController.AimType.phoneGun)
+						return;
 
 		Debug.Log ("changeWeapon : next");
 
@@ -131,6 +137,8 @@ public class GGestureManager : MonoBehaviour {
 
 		HOTween.To(allWeaponIcon[(int)_weapon].transform,AnimationTime,new TweenParms()
 		           .Prop("localScale",allWeaponIcon[(int)_weapon].transform.localScale/ScaleRatio));
+
+
 
 		_weapon++;
 
@@ -151,6 +159,8 @@ public class GGestureManager : MonoBehaviour {
 		if (WeaponChanging)
 						return;
 
+		if (aimTypeController.aimType == AimTypeController.AimType.phoneGun)
+			return;
 
 		Debug.Log ("changeWeapon : previous");
 
@@ -186,17 +196,21 @@ public class GGestureManager : MonoBehaviour {
 
 	public void CheckWeaponState()
 	{
-		if (((int)_weapon) == 0)
-			LeftArrow.gameObject.SetActive (false);
-	
-		if (((int)_weapon) == 1)
-			LeftArrow.gameObject.SetActive (true);
-
-		if (((int)_weapon) == ((int)WeaponType.Count - 1))
-			RightArrow.gameObject.SetActive (false);
-
-		if (((int)_weapon) == ((int)WeaponType.Count - 2))
-			RightArrow.gameObject.SetActive (true);
+				if (((int)_weapon) == 0) 
+				{
+						LeftArrow.gameObject.SetActive (false);
+						RightArrow.gameObject.SetActive (true);
+				} 
+				else if (((int)_weapon) == ((int)WeaponType.Count - 1)) 
+				{
+						RightArrow.gameObject.SetActive (false);
+						LeftArrow.gameObject.SetActive (true);
+				}
+				else 
+				{
+					RightArrow.gameObject.SetActive (true);
+					LeftArrow.gameObject.SetActive (true);	
+				}
 
 	}
 	
@@ -222,6 +236,68 @@ public class GGestureManager : MonoBehaviour {
 		
 		communicationManager.SendJson (commandJsonObject);
 	}
+
+	public void AimModeChanging(AimTypeController.AimType type)
+	{
+		if (type == AimTypeController.AimType.phoneGun) 
+		{
+			WeaponChanging = true;
+			
+			HOTween.To(TouchPanel.transform,AnimationTime,new TweenParms()
+			           .Prop("localPosition",new Vector3(0,-WeaponPanelOffset,0),true).OnStepComplete(weaponChangingDone));
+
+			HOTween.To(allWeaponIcon[(int)_weapon].transform,AnimationTime,new TweenParms()
+			           .Prop("localScale",allWeaponIcon[(int)_weapon].transform.localScale*ScaleUp));
+
+			HOTween.To(allWeaponIcon[(int)_weapon].transform,AnimationTime,new TweenParms()
+			           .Prop("localPosition",WeaponOffsets[(int)_weapon],true));
+
+
+			for (int i =0;i<allWeaponIcon.Count;i++)
+			{
+				GameObject o = allWeaponIcon[i];
+				
+				if(i == (int)_weapon)continue;
+				if(i == (int)WeaponType.Count)break;
+				
+				o.SetActive(false);
+			}
+
+			RightArrow.gameObject.SetActive(false);
+			LeftArrow.gameObject.SetActive(false);
+			//CheckWeaponState();
+		}
+		else if (type == AimTypeController.AimType.viewportCenter)
+		{
+			WeaponChanging = true;
+			
+			HOTween.To(TouchPanel.transform,AnimationTime,new TweenParms()
+			           .Prop("localPosition",new Vector3(0,WeaponPanelOffset,0),true).OnStepComplete(weaponChangingDone));
+
+			
+			HOTween.To(allWeaponIcon[(int)_weapon].transform,AnimationTime,new TweenParms()
+			           .Prop("localScale",allWeaponIcon[(int)_weapon].transform.localScale/ScaleUp));
+
+			HOTween.To(allWeaponIcon[(int)_weapon].transform,AnimationTime,new TweenParms()
+			           .Prop("localPosition",-WeaponOffsets[(int)_weapon],true));
+
+			for (int i =0;i<allWeaponIcon.Count;i++)
+			{
+				GameObject o = allWeaponIcon[i];
+				
+				//if(i == (int)_weapon)continue;
+				if(i == (int)WeaponType.Count)break;
+				
+				o.SetActive(true);
+			}
+
+			
+			CheckWeaponState();
+		}
+	}
+
+	public int WeaponPanelOffset = 7;
+	public float ScaleUp = 3;
 
 	public void weaponChangingDone()
 	{

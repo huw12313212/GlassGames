@@ -57,11 +57,11 @@
  <Reference Include="Parse.Unity">
  <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/Parse.Unity.dll</HintPath>
  </Reference>
- <Reference Include="TouchScript">
- <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/TouchScript/Plugins/TouchScript.dll</HintPath>
- </Reference>
  <Reference Include="HOTween">
  <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/HOTween/Plugins/HOTween.dll</HintPath>
+ </Reference>
+ <Reference Include="TouchScript">
+ <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/TouchScript/Plugins/TouchScript.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
