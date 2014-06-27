@@ -8,13 +8,14 @@ public class AimTypeController : MonoBehaviour {
 	public GyroManager gyroManager;
 
 	public bool GyroListening;
+	public bool GUIShowing;
 	public float GunYValue = -0.8f;
 	public float ViewPortZValue = -0.8f;
 
 	public List<GameObject> ViewPortCenterEnables = new List<GameObject>();
 	public List<GameObject> GunAimEnables = new List<GameObject>();
 
-	public delegate void AimTypeChangeEventHandler(AimType type);
+	public delegate void AimTypeChangeEventHandler(AimType previous,AimType type);
 	public event AimTypeChangeEventHandler AimTypeChangeEvent;
 
 
@@ -24,9 +25,10 @@ public class AimTypeController : MonoBehaviour {
 	{
 		viewportCenter,
 		phoneGun,
+		wheel,
 	}
 
-	private AimType _aimType = AimType.viewportCenter;
+	public AimType _aimType = AimType.viewportCenter;
 	public AimType aimType
 	{
 		get
@@ -37,7 +39,7 @@ public class AimTypeController : MonoBehaviour {
 
 	//public voi
 
-
+	public GGestureManager gestureManager;
 	// Use this for initialization
 	void Start () {
 	
@@ -48,20 +50,24 @@ public class AimTypeController : MonoBehaviour {
 
 		if(communicationManager.Playable)
 		{
-			if (GyroListening) 
+			if(!gestureManager.WeaponChanging)
 			{
-				if(_aimType == AimType.viewportCenter)
+				if (GyroListening) 
 				{
-					if(gyroManager.lastAcc.y < GunYValue)
+					if(_aimType == AimType.viewportCenter)
 					{
-						changeToGunMode();
+
+						if(gyroManager.lastAcc.y < GunYValue)
+						{
+							changeToGunMode();
+						}
 					}
-				}
-				else if(_aimType == AimType.phoneGun)
-				{
-					if(gyroManager.lastAcc.z < ViewPortZValue)
+					else if(_aimType == AimType.phoneGun)
 					{
-						changeToViewPortMode();
+						if(gyroManager.lastAcc.z < ViewPortZValue)
+						{
+							changeToViewPortMode();
+						}
 					}
 				}
 			}
@@ -77,13 +83,18 @@ public class AimTypeController : MonoBehaviour {
 
 	public void changeToGunMode()
 	{
+		if (_aimType == AimType.phoneGun)
+						return;
+
+		AimType previous = _aimType;
+
 		gyroManager.Transfering = true;
 		
 		_aimType = AimType.phoneGun;
 
 		if (AimTypeChangeEvent != null)
 		{
-			AimTypeChangeEvent(_aimType);
+			AimTypeChangeEvent(previous,_aimType);
 		}
 
 		JSONObject json = new JSONObject();
@@ -98,19 +109,50 @@ public class AimTypeController : MonoBehaviour {
 
 	public void changeToViewPortMode()
 	{
+		if (_aimType == AimType.viewportCenter)
+			return;
+
 		gyroManager.Transfering = false;
+
+		AimType previous = _aimType;
 		
 		_aimType = AimType.viewportCenter;
 
 		if (AimTypeChangeEvent != null)
 		{
-			AimTypeChangeEvent(_aimType);
+			AimTypeChangeEvent(previous,_aimType);
 		}
 		
 		JSONObject json = new JSONObject();
 		json.AddField("command","changeAimMode");
 		json.AddField("mode","viewportCenter");
 
+		SetEnableList (GunAimEnables,false);
+		SetEnableList (ViewPortCenterEnables, true);
+		
+		communicationManager.SendJson(json);
+	}
+
+	public void changeToWheelMode()
+	{
+		if (_aimType == AimType.wheel || _aimType == AimType.viewportCenter)
+			return;
+		
+		gyroManager.Transfering = true;
+
+		AimType previous = _aimType;
+
+		_aimType = AimType.wheel;
+		
+		if (AimTypeChangeEvent != null)
+		{
+			AimTypeChangeEvent(previous,_aimType);
+		}
+		
+		JSONObject json = new JSONObject();
+		json.AddField("command","changeAimMode");
+		json.AddField("mode","phoneGun");
+		
 		SetEnableList (GunAimEnables,false);
 		SetEnableList (ViewPortCenterEnables, true);
 		
@@ -129,7 +171,7 @@ public class AimTypeController : MonoBehaviour {
 	{
 		if(communicationManager.Playable)
 		{
-			if(!GyroListening)
+			if(GUIShowing)
 			{
 				if (_aimType == AimType.viewportCenter) 
 				{

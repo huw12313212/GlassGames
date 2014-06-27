@@ -8,7 +8,7 @@ public class GGestureManager : MonoBehaviour {
 
 
 	public GameObject TouchPanel;
-	public FlickGesture flickGesture;
+	//public FlickGesture flickGesture;
 	public CommunicationManager communicationManager;
 	public TapGesture RightArrow;
 	public TapGesture LeftArrow;
@@ -16,10 +16,15 @@ public class GGestureManager : MonoBehaviour {
 	public GameObject weaponBase;
 	public List<GameObject> allWeaponIcon;
 	public bool WeaponChanging = false;
+	public FlickGesture flickerGesture;
 
 	public float ShiftDistance;
 	public float AnimationTime;
 	public float ScaleRatio;
+
+	public GameObject Wheel;
+	public List<GameObject> joySticks;
+
 
 	public EaseType easeType;
 
@@ -86,22 +91,73 @@ public class GGestureManager : MonoBehaviour {
 		}
 
 
-		flickGesture.Flicked += (object sender, System.EventArgs e) => 
-		{
 
-			Debug.Log("flicked:"+flickGesture.ScreenFlickVector);
 
-			//flickGesture.scree
+				flickerGesture.Flicked += (object sender, System.EventArgs e) => 
+				{
+					
+					float absX = Mathf.Abs(flickerGesture.ScreenFlickVector.x);
+					float absY = Mathf.Abs(flickerGesture.ScreenFlickVector.y);
 
-			if(flickGesture.ScreenFlickVector.x>0)
-			{
-				changeToPreviousWeapon();
-			}
-			else if(flickGesture.ScreenFlickVector.x<0)
-			{
-				changeToNextWeapon();
-			}
-		};
+					//flickGesture.scree
+
+					if(absX>absY)
+					{
+							if(flickerGesture.ScreenFlickVector.x>0)
+							{
+								changeToPreviousWeapon();
+							}
+							else if(flickerGesture.ScreenFlickVector.x<0)
+							{
+								changeToNextWeapon();
+							}
+					}
+					else
+					{
+
+							if(flickerGesture.ScreenFlickVector.y<0)
+							{
+								if(aimTypeController.aimType == AimTypeController.AimType.phoneGun)
+								{
+									aimTypeController.changeToWheelMode();
+									Wheel.SetActive(true);
+									allWeaponIcon[(int)_weapon].SetActive(false);
+
+									foreach(GameObject o in joySticks)
+									{
+										o.SetActive(true);
+									}
+									
+								}
+								else if(aimTypeController.aimType == AimTypeController.AimType.viewportCenter)
+								{
+									aimTypeController.changeToGunMode();
+								}
+							}
+							else if(flickerGesture.ScreenFlickVector.y>0)
+							{
+								if(aimTypeController.aimType == AimTypeController.AimType.wheel)
+								{
+									aimTypeController.changeToGunMode();
+									Wheel.SetActive(false);
+									allWeaponIcon[(int)_weapon].SetActive(true);
+
+									foreach(GameObject o in joySticks)
+									{
+										o.SetActive(false);
+									}
+								}
+								else if(aimTypeController.aimType == AimTypeController.AimType.phoneGun)
+								{
+									aimTypeController.changeToViewPortMode();
+								}
+							}
+					}
+				};
+
+				
+
+
 
 		RightArrow.Tapped += (object sender, System.EventArgs e) => 
 		{
@@ -237,9 +293,9 @@ public class GGestureManager : MonoBehaviour {
 		communicationManager.SendJson (commandJsonObject);
 	}
 
-	public void AimModeChanging(AimTypeController.AimType type)
+	public void AimModeChanging(AimTypeController.AimType previous,AimTypeController.AimType type)
 	{
-		if (type == AimTypeController.AimType.phoneGun) 
+		if (type == AimTypeController.AimType.phoneGun&&previous== AimTypeController.AimType.viewportCenter) 
 		{
 			WeaponChanging = true;
 			
@@ -251,6 +307,9 @@ public class GGestureManager : MonoBehaviour {
 
 			HOTween.To(allWeaponIcon[(int)_weapon].transform,AnimationTime,new TweenParms()
 			           .Prop("localPosition",WeaponOffsets[(int)_weapon],true));
+
+			HOTween.To(allWeaponIcon[(int)_weapon].transform,AnimationTime,new TweenParms()
+			           .Prop("rotation",WeaponRotates[(int)_weapon],true));
 
 
 			for (int i =0;i<allWeaponIcon.Count;i++)
@@ -267,7 +326,7 @@ public class GGestureManager : MonoBehaviour {
 			LeftArrow.gameObject.SetActive(false);
 			//CheckWeaponState();
 		}
-		else if (type == AimTypeController.AimType.viewportCenter)
+		else if (type == AimTypeController.AimType.viewportCenter&& previous == AimTypeController.AimType.phoneGun)
 		{
 			WeaponChanging = true;
 			
@@ -280,6 +339,10 @@ public class GGestureManager : MonoBehaviour {
 
 			HOTween.To(allWeaponIcon[(int)_weapon].transform,AnimationTime,new TweenParms()
 			           .Prop("localPosition",-WeaponOffsets[(int)_weapon],true));
+
+
+			HOTween.To(allWeaponIcon[(int)_weapon].transform,AnimationTime,new TweenParms()
+			           .Prop("rotation",-WeaponRotates[(int)_weapon],true));
 
 			for (int i =0;i<allWeaponIcon.Count;i++)
 			{
