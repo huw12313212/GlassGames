@@ -193,12 +193,27 @@ public class NetworkManager : MonoBehaviour {
 					//Debug.Log("Single Tap!");
 					break;
 				case "doubleTap":
-					//Debug.Log("Double Tap!");
+					Debug.Log("Double Tap!");
 
-					playerController.weaponManager.SwitchWeapon();
+					
 					//Application.Quit();
 
 					break;
+				case"changeWeapon":
+
+					string direction = commandObject["direction"].str;
+					
+				if(direction == "previous")
+				{
+					playerController.weaponManager.ChangeWeaponToPrevous();
+				}
+				else
+				{
+					playerController.weaponManager.ChangeWeaponToNext();
+				}
+
+				break;
+
 				case "swipe":
 					Debug.Log("Swipe!");
 					break;

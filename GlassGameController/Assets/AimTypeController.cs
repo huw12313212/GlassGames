@@ -17,6 +17,9 @@ public class AimTypeController : MonoBehaviour {
 	public delegate void AimTypeChangeEventHandler(AimType type);
 	public event AimTypeChangeEventHandler AimTypeChangeEvent;
 
+
+
+
 	public enum AimType
 	{
 		viewportCenter,

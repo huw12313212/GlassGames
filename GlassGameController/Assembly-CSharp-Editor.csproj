@@ -47,8 +47,12 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\CNJoystick\Editor\CreateAtlas.cs" />
+     <None Include="Assets\HOTween\readme.txt" />
+     <None Include="Assets\Realistic Shooter Kit\Materials\Advanced Spec Refl Color.shader" />
      <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
+     <None Include="Assets\Realistic Shooter Kit\Materials\Glass Reflective.shader" />
      <None Include="Assets\CNJoystick\OnScreenControls\Initial Pack\Sprites\flatDark\flatDark.xml" />
+     <None Include="Assets\FPS_Character Pack\Resources\FPS_CharacterPack_F\Shaders\toon_cutoff.shader" />
  <Reference Include="Parse.Unity">
  <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/Parse.Unity.dll</HintPath>
  </Reference>
@@ -60,6 +64,12 @@
  </Reference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>/Applications/Unity/Unity.app/Contents/Frameworks/Managed/UnityEditor.Graphs.dll</HintPath>
+ </Reference>
+ <Reference Include="HOTweenV1_Editor">
+ <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/HOTween/Plugins/Editor/HOTweenV1_Editor.dll</HintPath>
+ </Reference>
+ <Reference Include="HOTween">
+ <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/HOTween/Plugins/HOTween.dll</HintPath>
  </Reference>
   </ItemGroup>
   <ItemGroup>

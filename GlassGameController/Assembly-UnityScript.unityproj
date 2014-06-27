@@ -48,13 +48,20 @@
   <ItemGroup>
      <Compile Include="Assets\TouchScript\Examples\General\Tap\Scripts\TapJS_Breaker.js" />
      <Compile Include="Assets\TouchScript\Examples\General\Tap\Scripts\TapJS_Spawner.js" />
+     <None Include="Assets\HOTween\readme.txt" />
+     <None Include="Assets\Realistic Shooter Kit\Materials\Advanced Spec Refl Color.shader" />
      <None Include="Assets\Plugins\Android\AndroidManifest.xml" />
+     <None Include="Assets\Realistic Shooter Kit\Materials\Glass Reflective.shader" />
      <None Include="Assets\CNJoystick\OnScreenControls\Initial Pack\Sprites\flatDark\flatDark.xml" />
+     <None Include="Assets\FPS_Character Pack\Resources\FPS_CharacterPack_F\Shaders\toon_cutoff.shader" />
  <Reference Include="Parse.Unity">
  <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/Parse.Unity.dll</HintPath>
  </Reference>
  <Reference Include="TouchScript">
  <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/TouchScript/Plugins/TouchScript.dll</HintPath>
+ </Reference>
+ <Reference Include="HOTween">
+ <HintPath>/Users/huw12313212/GlassGames/GlassGameController/Assets/HOTween/Plugins/HOTween.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

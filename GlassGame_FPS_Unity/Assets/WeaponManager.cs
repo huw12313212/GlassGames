@@ -22,16 +22,43 @@ public class WeaponManager : MonoBehaviour {
 		handGrenade,
 		knife,
 		light,
+		count,
 	}
 
-	public void SwitchWeapon()
+	public void ChangeWeaponToPrevous()
 	{
 
+		//Debug.Log ("previous");
 		weaponRoot [currentWeaponIndex].SetActive (false);
+		
+		currentWeaponIndex = (currentWeaponIndex - 1);
 
+		if (currentWeaponIndex < 0)
+						currentWeaponIndex += WeaponType.count;
+
+		weaponType = (WeaponType)currentWeaponIndex;
+		
+		weaponRoot[currentWeaponIndex].SetActive(true);
+		
+		CheckWeaponState ();
+
+	}
+
+	public void ChangeWeaponToNext()
+	{
+		//Debug.Log ("next");
+		weaponRoot [currentWeaponIndex].SetActive (false);
+		
 		currentWeaponIndex = (currentWeaponIndex + 1) % weaponRoot.Count;
 		weaponType = (WeaponType)currentWeaponIndex;
 
+		weaponRoot[currentWeaponIndex].SetActive(true);
+
+		CheckWeaponState ();
+	}
+
+	public void CheckWeaponState()
+	{
 		if (weaponType == WeaponType.handGrenade)
 		{
 			CrossHairController.gameObject.SetActive(false);
@@ -48,15 +75,11 @@ public class WeaponManager : MonoBehaviour {
 		}
 		else if(weaponType == WeaponType.light)
 		{
-			CrossHairController.gameObject.SetActive(true);
-			CrossHairController.Reset();
+			CrossHairController.gameObject.SetActive(false);
+		//	CrossHairController.Reset();
 			bulletShooter.weaponType = BulletShooter.WeaponType.flashLight;
 		}
-
-		weaponRoot[currentWeaponIndex].SetActive(true);
-
 	}
-	
 
 	public void TriggerAttack()
 	{

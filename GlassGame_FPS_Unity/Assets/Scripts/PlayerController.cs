@@ -163,7 +163,7 @@ public class PlayerController : MonoBehaviour {
 				}
 				else if(delta.y > 15 && delta.x < 5 && delta.x>-5)
 				{
-					weaponManager.SwitchWeapon();
+//					weaponManager.SwitchWeapon();
 					
 				}
 				else
