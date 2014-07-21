@@ -53,6 +53,7 @@
      <Compile Include="Assets\CNJoystick\Scripts\CNJoystick.cs" />
      <Compile Include="Assets\CNJoystick\Scripts\SkeletonAnimator.cs" />
      <Compile Include="Assets\CommunicationManager.cs" />
+     <Compile Include="Assets\ExitManager.cs" />
      <Compile Include="Assets\GGestureManager.cs" />
      <Compile Include="Assets\GyroManager.cs" />
      <Compile Include="Assets\HOTween\_Demo\HOTweenDemoBrain.cs" />

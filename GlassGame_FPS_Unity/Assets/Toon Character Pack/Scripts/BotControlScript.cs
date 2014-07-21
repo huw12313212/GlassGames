@@ -18,8 +18,8 @@ public class BotControlScript : MonoBehaviour
 	private AnimatorStateInfo layer2CurrentState;	// a reference to the current state of the animator, used for layer 2
 	private CapsuleCollider col;					// a reference to the capsule collider of the character
 
-	public UISlider hpSlider;
-	public UISlider mpSlider;
+//	public UISlider hpSlider;
+//	public UISlider mpSlider;
 
 	public float MAX_MP = 100;
 	public float MP=100;
@@ -84,8 +84,8 @@ public class BotControlScript : MonoBehaviour
 			MP+= 5 * Time.deltaTime;
 		}
 
-		mpSlider.value = MP / MAX_MP;
-		hpSlider.value = HP / MAX_HP;
+		//mpSlider.value = MP / MAX_MP;
+		//hpSlider.value = HP / MAX_HP;
 	}
 
 	bool killed = false;

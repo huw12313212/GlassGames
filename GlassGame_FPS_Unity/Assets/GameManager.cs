@@ -17,9 +17,9 @@ public class GameManager : MonoBehaviour {
 	public List<GameObject> SpawnPoint;
 	public List<GameObject> MonsterCandidate;
 
-	public UILabel WaveLabel;
-	public UILabel KillLabel;
-	public UILabel EnemyLabel;
+//	public UILabel WaveLabel;
+//	public UILabel KillLabel;
+//	public UILabel EnemyLabel;
 
 	float nextTimer = 5;
 
@@ -40,12 +40,12 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (WaveLabel != null) 
+	//	if (WaveLabel != null) 
 		{
 
-						WaveLabel.text = "" + Wave;
-						EnemyLabel.text = "" + enemyNumber;
-						KillLabel.text = "" + killNumber;
+					//	WaveLabel.text = "" + Wave;
+					//	EnemyLabel.text = "" + enemyNumber;
+					//	KillLabel.text = "" + killNumber;
 		}
 
 		if (enemyNumber <= 0) 

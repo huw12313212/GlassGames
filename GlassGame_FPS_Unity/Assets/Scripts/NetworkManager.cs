@@ -234,6 +234,9 @@ public class NetworkManager : MonoBehaviour {
 //				Debug.Log("Accelerometer: x = "+commandObject["accX"].n+" y = "+commandObject["accY"].n+" z = "+commandObject["accZ"].n);
 
 				break;
+				case"exit":
+					Application.Quit();
+					break;
 				case "accelerometer":
 					//Debug.Log("Accelerometer: x = "+commandObject["x"]+" y = "+commandObject["y"]+" z = "+commandObject["z"]);
 					break;
