@@ -117,9 +117,20 @@ public class PlayerController : MonoBehaviour {
 
 	void handleTouch(){
 
-		if (AndroidInput.touchCountSecondary == 1) {
+		if (AndroidInput.touchCountSecondary > 1)
+						Debug.Log ("Multi-Touched?");
+
+		if (AndroidInput.touchCountSecondary != 0) {
+
+
+
+			for(int i = 0;i< AndroidInput.touchCountSecondary;i++)
+			{
+
+			Touch touch = AndroidInput.GetSecondaryTouch(i);
 			
-			Touch touch = AndroidInput.GetSecondaryTouch(0);
+				//Debug.Log("touched");
+
 
 		
 
@@ -182,6 +193,7 @@ public class PlayerController : MonoBehaviour {
 
 
 				break;
+			}
 			}
 		}
 	}
