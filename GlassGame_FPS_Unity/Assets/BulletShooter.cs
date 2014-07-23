@@ -40,7 +40,7 @@ public class BulletShooter : MonoBehaviour {
 	public enum WeaponType
 	{
 		gun,
-		flashLight,
+		//flashLight,
 	}
 
 	private WeaponType _weaponType = WeaponType.gun;
@@ -54,21 +54,16 @@ public class BulletShooter : MonoBehaviour {
 		{
 			_weaponType = value;
 
-			if(_weaponType==WeaponType.flashLight)
-			{
-				gunObject.SetActive(false);
-				flashLightObject.SetActive(true);
-			}
-			else if(_weaponType == WeaponType.gun)
+		 if(_weaponType == WeaponType.gun)
 			{
 				gunObject.SetActive(true);
-				flashLightObject.SetActive(false);
+				//flashLightObject.SetActive(false);
 			}
 		}
 	} 
 
 	public GameObject gunObject;
-	public GameObject flashLightObject;
+	//public GameObject flashLightObject;
 
 
 	public GameObject gunGyro;

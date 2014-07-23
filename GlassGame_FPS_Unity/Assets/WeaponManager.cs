@@ -21,7 +21,6 @@ public class WeaponManager : MonoBehaviour {
 		handGun,
 		handGrenade,
 		knife,
-		light,
 		count,
 	}
 
@@ -72,12 +71,6 @@ public class WeaponManager : MonoBehaviour {
 		else if(weaponType == WeaponType.handGun)
 		{
 			CrossHairController.gameObject.SetActive(false);
-		}
-		else if(weaponType == WeaponType.light)
-		{
-			CrossHairController.gameObject.SetActive(false);
-		//	CrossHairController.Reset();
-			bulletShooter.weaponType = BulletShooter.WeaponType.flashLight;
 		}
 	}
 
