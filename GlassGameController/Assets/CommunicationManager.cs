@@ -53,10 +53,10 @@ public class CommunicationManager : MonoBehaviour {
 		switch (communicateTheme)
 		{
 		case CommunicateTheme.bluetooth:
-			Bluetooth.Instance().Send(json.ToString());
+			Bluetooth.Instance().Send(json.ToString().Replace("\n",""));
 			break;
 		case CommunicateTheme.network:
-			networkManager.Send(json.ToString());
+			networkManager.Send(json.ToString().Replace("\n",""));
 
 			break;
 		}

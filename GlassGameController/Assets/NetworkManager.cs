@@ -4,6 +4,7 @@ using Parse;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+using System.Threading;
 
 public class NetworkManager : MonoBehaviour {
 
@@ -13,6 +14,10 @@ public class NetworkManager : MonoBehaviour {
 	public bool isConnected = false;
 	TcpClient client;
 	StreamWriter streamWriter;
+
+	public bool usingProxy;
+	public string proxyHost;
+	public int proxyPort;
 
 	// Use this for initialization
 	void Start () {
@@ -32,15 +37,26 @@ public class NetworkManager : MonoBehaviour {
 
 	void ConnectTo(string ip)
 	{
-		Debug.Log("Connecting to "+ip);
+		if (usingProxy) 
+		{
+			Debug.Log ("Connecting to " + ip);
 
-	 client = new TcpClient ();
-		client.BeginConnect(ip, port,new System.AsyncCallback(ProcessDnsInformation), client);
-
+			client = new TcpClient ();
+			client.BeginConnect (proxyHost, proxyPort, new System.AsyncCallback (ProcessDnsInformation), client);
+		}
+		else
+		{
+			Debug.Log ("Connecting to " + ip);
+			
+			client = new TcpClient ();
+			client.BeginConnect (ip, port, new System.AsyncCallback (ProcessDnsInformation), client);
+			
+		}
 
 	}
 
-
+	/*Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+	clientThread.Start(client);*/
 	void ProcessDnsInformation(System.IAsyncResult result)
 	{
 		if (result.IsCompleted) 
@@ -48,6 +64,32 @@ public class NetworkManager : MonoBehaviour {
 			Debug.Log("[Connect Success] : "+LastGameIP);
 			isConnected = true;
 			streamWriter = new StreamWriter(client.GetStream());
+
+			if(usingProxy)
+			{
+				Send("{\"command\":\"ProxyToTarget\",\"targetID\":\"GlassGameServer\",\"id\":\"GlassGameClient\"}");
+			}
+
+
+			Thread clientThread = new Thread(new ParameterizedThreadStart(ReadData));
+			clientThread.Start(client);
+		}
+	}
+
+	public void ReadData(object client)
+	{
+		StreamReader reader = new StreamReader(((TcpClient)client).GetStream());
+
+		while(true)
+		{
+
+			Debug.Log("Try reading");
+
+			string message = reader.ReadLine();
+
+			if (message.Length > 0)
+				Debug.Log (message);
+
 		}
 	}
 
@@ -55,7 +97,7 @@ public class NetworkManager : MonoBehaviour {
 	{
 		if (isConnected) 
 		{
-			streamWriter.Write(str);
+			streamWriter.WriteLine(str);
 			streamWriter.Flush();
 		}
 	}

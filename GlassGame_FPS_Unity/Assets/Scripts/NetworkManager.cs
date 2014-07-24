@@ -20,6 +20,11 @@ public class NetworkManager : MonoBehaviour {
 	public PlayerController playerController;
 	public BulletShooter shooter;
 
+	public bool UsingProxy;
+	public string ProxyURL;
+	public int ProxyPort;
+	public TcpClient proxySocket;
+
 	//public CNj
 	//public BotControlScript botControllScript;
 
@@ -27,9 +32,18 @@ public class NetworkManager : MonoBehaviour {
 	void Start () {
 		//init
 		commandList = new ArrayList ();
-		this.tcpListener = new TcpListener(IPAddress.Any, serverPort);
-		this.listenThread = new Thread(new ThreadStart(ListenForClients));
-		this.listenThread.Start();
+
+		if (UsingProxy) 
+		{
+			proxySocket = new TcpClient ();
+			proxySocket.BeginConnect (ProxyURL, ProxyPort, new System.AsyncCallback (ProxySuccess),proxySocket);
+		}
+		else
+		{
+			this.tcpListener = new TcpListener(IPAddress.Any, serverPort);
+			this.listenThread = new Thread(new ThreadStart(ListenForClients));
+			this.listenThread.Start();
+		}
 
 		string localIP = LocalIPAddress ();
 
@@ -52,14 +66,22 @@ public class NetworkManager : MonoBehaviour {
 
 		});
 
-
-
-
-	
-				
-
 	}
 
+	void ProxySuccess(System.IAsyncResult result)
+	{
+		if (result.IsCompleted) 
+		{
+			Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+			clientThread.Start(proxySocket);
+
+			proxyWriter = new StreamWriter(proxySocket.GetStream());
+			proxyWriter.WriteLine("{\"command\":\"CreateProxyServer\",\"id\":\"GlassGameServer\"}");
+			proxyWriter.Flush();
+			Debug.Log ("Proxy Connect");
+		}
+	}
+	StreamWriter proxyWriter;
 	private void ListenForClients()
 	{
 		this.tcpListener.Start();
@@ -75,71 +97,22 @@ public class NetworkManager : MonoBehaviour {
 			//with connected client
 			Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
 			clientThread.Start(client);
+			Debug.Log ("Client Connect");
 		}
 	}
 
 	private void HandleClientComm(object client)
 	{
-		Debug.Log ("Client Connect");
-
 		TcpClient tcpClient = (TcpClient)client;
-		NetworkStream clientStream = tcpClient.GetStream();
-		
-		byte[] message = new byte[4096];
-		int bytesRead;
-		
+		StreamReader clientStream = new StreamReader(tcpClient.GetStream());
+
 		while (true)
 		{
-			bytesRead = 0;
-			
-			try
-			{
-				//blocks until a client sends a message
-				bytesRead = clientStream.Read(message, 0, 4096);
-			}
-			catch
-			{
-				//a socket error has occured
-				break;
-			}
-			
-			if (bytesRead == 0)
-			{
-				//the client has disconnected from the server
-				break;
-			}
-			
-			//message has successfully been received
-			ASCIIEncoding encoder = new ASCIIEncoding();
-			//System.Diagnostics.Debug.WriteLine(encoder.GetString(message, 0, bytesRead));
-
-			//Command may contain more than 1 command
-			string commandStr = encoder.GetString(message, 0, bytesRead);
-
-			//Debug.Log("Get Command:"+commandStr);
-
-			//split command
-			char[] splitChar = {'{'};
-
-			string[] results = commandStr.Split(splitChar);
-
-			//get all command in command Str
-			for(int i = 1;i<results.Length;i++){
-				results[i] = splitChar[0]+results[i];
-				//Debug.Log("Get Command split:"+results[i]);
-
-				//parse to json object
-				JSONObject commandJsonObject = new JSONObject(results[i]);
-
-				//push to command list
-				if(commandJsonObject!=null){ 
-					commandList.Add (commandJsonObject);
-				}
-			}
-
+			string commandStr = clientStream.ReadLine();
+			Debug.Log("reading");
+			JSONObject commandJsonObject = new JSONObject(commandStr);
+			commandList.Add(commandJsonObject);
 		}
-		
-		//tcpClient.Close();
 	}
 
 	void parseCommand(){
