@@ -109,11 +109,17 @@ public class NetworkManager : MonoBehaviour {
 		while (true)
 		{
 			string commandStr = clientStream.ReadLine();
-			Debug.Log("reading");
+			//Debug.Log("reading:"+commandStr.Length);
+
+		
 			JSONObject commandJsonObject = new JSONObject(commandStr);
 			commandList.Add(commandJsonObject);
+
+
 		}
 	}
+
+	char[] splitArray = "\t".ToCharArray();
 
 	void parseCommand(){
 		//check

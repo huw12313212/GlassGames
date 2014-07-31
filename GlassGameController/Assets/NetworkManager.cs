@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using System.Threading;
+using System.Collections.Generic;
 
 public class NetworkManager : MonoBehaviour {
 
@@ -18,6 +19,14 @@ public class NetworkManager : MonoBehaviour {
 	public bool usingProxy;
 	public string proxyHost;
 	public int proxyPort;
+
+	private TcpListener tcpListener;
+	private Thread listenThread;
+	public int listenPort = 5567;
+
+	public delegate void NetworkCommandEventHandler(JSONObject command);
+	public NetworkCommandEventHandler networkCommandEvent;
+
 
 	// Use this for initialization
 	void Start () {
@@ -33,6 +42,63 @@ public class NetworkManager : MonoBehaviour {
 			LastGameIP = obj["ip"].ToString();
 			ConnectTo(LastGameIP);
 		});
+
+
+		this.tcpListener = new TcpListener(IPAddress.Any, listenPort);
+		this.listenThread = new Thread(new ThreadStart(ListenForClients));
+		this.listenThread.Start();
+	}
+
+
+	private void ListenForClients()
+	{
+		this.tcpListener.Start();
+		
+		while (true)
+		{
+			Debug.Log ("Waiting for Client");
+			
+			//blocks until a client has connected to the server
+			TcpClient client = this.tcpListener.AcceptTcpClient();
+			
+			//create a thread to handle communication 
+			//with connected client
+			Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+			clientThread.Start(client);
+			Debug.Log ("Client Connect");
+		}
+	}
+
+	private void HandleClientComm(object client)
+	{
+		TcpClient tcpClient = (TcpClient)client;
+		StreamReader clientStream = new StreamReader(tcpClient.GetStream());
+		
+		while (true)
+		{
+			string commandStr = clientStream.ReadLine();
+			commandStr = commandStr.Split(splitArray)[1];
+			JSONObject obj = new JSONObject(commandStr.Trim());
+			commands.Add(obj);
+			//Debug.Log ("commandStr:"+commandStr);
+		}
+	}
+
+	private List<JSONObject> commands = new List<JSONObject>();
+	char[] splitArray = "\t".ToCharArray();
+
+	void Update ()
+	{
+		JSONObject[] copyCommand = commands.ToArray ();
+		commands.Clear ();
+
+		foreach (JSONObject obj in copyCommand) 
+		{
+			if(networkCommandEvent!=null)
+			{
+				networkCommandEvent(obj);
+			}
+		}
 	}
 
 	void ConnectTo(string ip)
@@ -83,7 +149,7 @@ public class NetworkManager : MonoBehaviour {
 		while(true)
 		{
 
-			Debug.Log("Try reading");
+			//Debug.Log("Try reading");
 
 			string message = reader.ReadLine();
 

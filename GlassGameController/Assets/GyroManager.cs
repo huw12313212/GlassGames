@@ -3,6 +3,8 @@ using System.Collections;
 
 public class GyroManager : MonoBehaviour {
 
+	public NetworkManager network;
+
 	public float updateRate = 0.1f;
 
 	public float counter =0;
@@ -11,11 +13,29 @@ public class GyroManager : MonoBehaviour {
 
 	public CommunicationManager communicationManager;
 
+	public GameObject GyroTest;
+
 	// Use this for initialization
 	void Start () {
 		Input.gyro.enabled = true;
 
+		network.networkCommandEvent += NetworkCommand;
+	}
 
+	public void NetworkCommand(JSONObject obj)
+	{
+		if (obj ["command"].str == "IMU1") 
+		{
+			float yaw = ((float)obj["yaw"].n);
+			float pitch = ((float)obj["pitch"].n);
+			float roll = ((float)obj["roll"].n);
+			Debug.Log("yaw:"+yaw+" pitch:"+pitch+" roll:"+roll);
+
+			GyroTest.transform.rotation = Quaternion.Euler(pitch,yaw,roll);
+			//GyroTest.transform.Rotate(new Vector3(0,-yaw,0));
+			//GyroTest.transform.Rotate(new Vector3(-pitch,0,0));
+			//GyroTest.transform.Rotate(new Vector3(0,0,roll));
+		}
 	}
 
 	public Quaternion lastQ;
