@@ -1,11 +1,13 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="../../robotic/robotic-strike/RoboticStrike/Assets/Communication/GameServer.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/GyroManager.cs">
     <Files>
-      <File FileName="../../robotic/robotic-strike/RoboticStrike/Assets/Communication/NetworkDebugger.cs" Line="1" Column="1" />
-      <File FileName="../../robotic/robotic-strike/RoboticStrike/Assets/Communication/GameServer.cs" Line="43" Column="37" />
-      <File FileName="../../robotic/robotic-strike/RoboticStrike/Assets/Communication/GameClient.cs" Line="112" Column="26" />
+      <File FileName="../../robotic/robotic-strike/RoboticStrike/Assets/Communication/NetworkDebugger.cs" Line="76" Column="2" />
+      <File FileName="../../robotic/robotic-strike/RoboticStrike/Assets/Communication/GameServer.cs" Line="43" Column="3" />
+      <File FileName="../../robotic/robotic-strike/RoboticStrike/Assets/Communication/GameClient.cs" Line="112" Column="5" />
       <File FileName="../../robotic/robotic-strike/RoboticStrike/Assets/Script/Utils/JSON.cs" Line="10" Column="1" />
+      <File FileName="Assets/NetworkManager.cs" Line="85" Column="3" />
+      <File FileName="Assets/GyroManager.cs" Line="38" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
