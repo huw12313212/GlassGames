@@ -46,6 +46,7 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\AccelerometerListener.cs" />
      <Compile Include="Assets\AimTypeController.cs" />
      <Compile Include="Assets\CNJoystick\Scripts\CN2DController.cs" />
      <Compile Include="Assets\CNJoystick\Scripts\CNCameraFollow.cs" />
@@ -57,6 +58,7 @@
      <Compile Include="Assets\GyroManager.cs" />
      <Compile Include="Assets\HOTween\_Demo\HOTweenDemoBrain.cs" />
      <Compile Include="Assets\JoystickManager.cs" />
+     <Compile Include="Assets\MicListener.cs" />
      <Compile Include="Assets\NetworkManager.cs" />
      <Compile Include="Assets\Scripts\Bluetooth.cs" />
      <Compile Include="Assets\Scripts\BluetoothEventListener.cs" />

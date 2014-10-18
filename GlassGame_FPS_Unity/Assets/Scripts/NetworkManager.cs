@@ -144,6 +144,8 @@ public class NetworkManager : MonoBehaviour {
 				continue;
 			}
 
+			//Debug.Log(commandObject);
+
 			switch (commandStr){
 				case "move":
 					//check
@@ -168,6 +170,9 @@ public class NetworkManager : MonoBehaviour {
 					}
 					break;
 				case "singleTap":
+				case "acceleration":
+				case "microphone":
+					
 					playerController.shoot();
 					//Debug.Log("Single Tap!");
 					break;
