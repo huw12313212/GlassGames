@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class GrenadeBoomChecker : MonoBehaviour {
 	//save monster
-	public List<MonsterScript> monsterInRage = new List<MonsterScript>();
+	public List<ZombieBehavior> monsterInRage = new List<ZombieBehavior>();
 
 	// Use this for initialization
 	void Start () {
@@ -18,7 +18,7 @@ public class GrenadeBoomChecker : MonoBehaviour {
 
 	public void hurtAllMonsterInRange(int damage){
 		//hurt all monster
-		foreach (MonsterScript monsterScript in monsterInRage) {
+		foreach (ZombieBehavior monsterScript in monsterInRage) {
 			monsterScript.Hurt(damage);	
 		}
 
@@ -28,11 +28,11 @@ public class GrenadeBoomChecker : MonoBehaviour {
 	//trigger
 	void OnTriggerEnter(Collider other) {
 		//add to monster list
-		monsterInRage.Add (other.gameObject.GetComponent<MonsterScript>());
+		monsterInRage.Add (other.gameObject.GetComponent<ZombieBehavior>());
 	}
 
 	void OnTriggerExit(Collider other){
 		//remove from monster list
-		monsterInRage.Remove (other.gameObject.GetComponent<MonsterScript>());
+		monsterInRage.Remove (other.gameObject.GetComponent<ZombieBehavior>());
 	}
 }

@@ -20,7 +20,7 @@ public class BulletController : MonoBehaviour {
 	{
 		if (contactList.Contains (other))return;
 
-		MonsterScript ms = other.gameObject.GetComponent<MonsterScript>();
+		ZombieBehavior ms = other.gameObject.GetComponent<ZombieBehavior>();
 
 		if (ms) 
 		{
