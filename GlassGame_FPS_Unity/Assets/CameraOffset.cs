@@ -6,10 +6,13 @@ public class CameraOffset : MonoBehaviour {
 	public GameObject targetCamera;
 	public GameObject lookAt;
 
-	public int CountDown = 90;
+	//public int CountDown = 90;
 
-	public void CheckOffset()
+	public void LookAt(GameObject target,float time)
 	{
+		LerpingTime = time;
+		lookAt = target;
+
 		Vector3 difVec3 = lookAt.transform.position - targetCamera.transform.position;
 		difVec3.Normalize ();
 		float targetRotationY =  Mathf.Atan2(difVec3.x,difVec3.z);
@@ -23,11 +26,22 @@ public class CameraOffset : MonoBehaviour {
 		double result = data / Mathf.PI * 180;
 
 		Vector3 rotate = transform.localRotation.eulerAngles;
-		rotate.y = - (float)result + (float)targetRotationY;
+		init = rotate;
+		rotate.y += - (float)result + (float)targetRotationY;
 
-		transform.localRotation = Quaternion.Euler(rotate);
+
+		currentCounter = 0;
+
+		end = rotate;
+		animating = true;
 
 	}
+
+	Vector3 init;
+	Vector3 end;
+	public float LerpingTime;
+	float currentCounter;
+	bool animating = false;
 
 	// Use this for initialization
 	void Start () {
@@ -36,17 +50,28 @@ public class CameraOffset : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//CheckOffset ();
 
-		//
-		if (CountDown > 0) 
-		{
-			CountDown--;
-			if(CountDown<=0)
-			{
-				CheckOffset();
-			}
+		if (Input.GetKeyDown (KeyCode.A)) {
+			this.LookAt(lookAt,LerpingTime);
 		}
 
+		if (animating) 
+		{
+			currentCounter += Time.deltaTime;
+
+
+			float ratio = currentCounter / LerpingTime;
+
+			if(ratio > 1)
+			{
+				ratio = 1;
+				animating = false;
+			}
+
+			Vector3 result = end * ratio + (init * (1 - ratio));
+
+			transform.localRotation = Quaternion.Euler(result);
+				
+		}
 	}
 }
