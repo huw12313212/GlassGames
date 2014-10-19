@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour {
 	public float backRatio;
 
 	public float tiltData;
+	public Vector3 tiltingDataV3;
 
 	private float forwordPosition;
 	
@@ -95,7 +96,30 @@ public class PlayerController : MonoBehaviour {
 	void handleJoystick2()
 	{
 		float rotateValue = joyStickInputRight.x * rotateSpeed * Time.deltaTime;
+		float rotateValue2 = -joyStickInputRight.y * rotateSpeed * Time.deltaTime;
+
+
+
 		offset.transform.Rotate (new Vector3 (0, rotateValue, 0));
+
+
+		currentOffestX += rotateValue2;
+
+		if (currentOffestX < -90)
+				currentOffestX = -90;
+		if(currentOffestX>90)
+				currentOffestX = 90;
+
+		camera.transform.localRotation = Quaternion.Euler (currentOffestX,0,0);
+
+
+	}
+
+	float currentOffestX = 0;
+
+	public void ClearCurrentOffestX()
+	{
+		currentOffestX = 0;
 	}
 
 	void handleJoystick()
@@ -108,8 +132,11 @@ public class PlayerController : MonoBehaviour {
 		RotateVec3.y = 0;
 		RotateVec3.Normalize ();
 		
-		Vector3 v = (joyStickInput.y * CurrentVec3 + (joyStickInput.x + tiltData) * RotateVec3);
-		
+		Vector3 v = (joyStickInput.y * CurrentVec3 + (joyStickInput.x) * RotateVec3);
+		v += tiltingDataV3;
+
+//		Debug.Log (v);
+
 		gameObject.rigidbody.velocity = v * moveSpeed ;
 	}
 

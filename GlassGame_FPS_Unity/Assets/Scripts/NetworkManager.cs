@@ -229,13 +229,13 @@ public class NetworkManager : MonoBehaviour {
 				Debug.Log("changeAimMode:"+mode);
 				if(mode.Equals("phoneGun"))
 				{
-//					Debug.Log("changed");
 					shooter.aimType = BulletShooter.AimType.phoneGun;
+					playerController.ClearCurrentOffestX();
 				}
 				else if(mode.Equals("viewportCenter"))
 				{
-					//Debug.Log("changed");
 					shooter.aimType = BulletShooter.AimType.viewportCenter;
+					playerController.ClearCurrentOffestX();
 				}
 
 				
@@ -263,6 +263,11 @@ public class NetworkManager : MonoBehaviour {
 					//targetObject.transform.position += targetObject.transform.right * x * playerController.moveSpeed * Time.deltaTime;
 					//}
 				}
+				break;
+			case "clearJoyStickOffset":
+
+				playerController.ClearCurrentOffestX();
+
 				break;
 
 				default:
