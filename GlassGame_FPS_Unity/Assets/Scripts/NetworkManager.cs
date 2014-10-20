@@ -264,10 +264,32 @@ public class NetworkManager : MonoBehaviour {
 					//}
 				}
 				break;
-			case "clearJoyStickOffset":
+			case "clearOffsetX":
 
 				playerController.ClearCurrentOffestX();
 
+				break;
+
+			case "headGesture":
+
+				bool enable = commandObject["value"].b;
+				tilt.enabled = enable;
+				
+				break;
+
+			case "onTrack":
+				
+				bool ontrack = commandObject["value"].b;
+				playerController.UserControl = !ontrack;
+				
+				break;
+
+			case "exit":
+
+				Debug.Log("quit");
+				Application.Quit();
+
+				
 				break;
 
 				default:
@@ -282,7 +304,7 @@ public class NetworkManager : MonoBehaviour {
 		//commandList.Clear();
 
 	}
-
+	public TiltListener tilt;
 
 	private bool isInitQuaternion = false;
 	public Quaternion initQuaternion;

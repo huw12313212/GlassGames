@@ -23,7 +23,7 @@ public class TiltListener : MonoBehaviour {
 
 	void OnDisable () {
 		clearTiltingData();
-		Debug.Log("disabled");
+//		Debug.Log("disabled");
 	}
 
 	public void clearTiltingData()

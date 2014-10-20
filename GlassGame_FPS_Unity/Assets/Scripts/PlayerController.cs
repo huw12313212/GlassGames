@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour {
 
 					MoveTarget = spwanNodes.MonsterSpwanNodeList[1];
 					cameraOffset.LookAt(MoveTarget,0.5f);
+					lookAtMonster = true;
 				}
 				else
 				{
@@ -103,9 +104,18 @@ public class PlayerController : MonoBehaviour {
 			{
 				if(zombie.HP<=0)
 				{
+					lookAtMonster = true;
 					int index = spwanNodes.AddToNext();
 					MoveTarget = spwanNodes.MonsterSpwanNodeList[index];
 					cameraOffset.LookAt(MoveTarget,0.5f);
+				}
+				else
+				{
+					if(lookAtMonster)
+					{
+						lookAtMonster = false;
+						cameraOffset.LookAt(zombie.gameObject,0.5f);
+					}
 				}
 			}
 		}
@@ -118,6 +128,8 @@ public class PlayerController : MonoBehaviour {
 
 
 	}
+
+	private bool lookAtMonster = false;
 
 	public float OnTrackMoveSpeed;
 

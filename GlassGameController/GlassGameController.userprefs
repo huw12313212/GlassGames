@@ -1,17 +1,13 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Exit.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/ConfigureManager.cs">
     <Files>
-      <File FileName="Assets/GyroManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/GGestureManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/MicListener.cs" Line="1" Column="1" />
-      <File FileName="Assets/JoystickManager.cs" Line="1" Column="1" />
-      <File FileName="Assets/AccelerometerListener.cs" Line="1" Column="1" />
-      <File FileName="Assets/CommunicationManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/ConfigureManager.cs" Line="41" Column="42" />
+      <File FileName="Assets/CheckBox.cs" Line="1" Column="1" />
+      <File FileName="Assets/NetworkManager.cs" Line="1" Column="1" />
       <File FileName="Assets/AimTypeController.cs" Line="1" Column="1" />
-      <File FileName="Assets/ConfigButton.cs" Line="1" Column="1" />
-      <File FileName="Assets/CheckBox.cs" Line="30" Column="43" />
-      <File FileName="Assets/Exit.cs" Line="5" Column="2" />
+      <File FileName="Assets/GGestureManager.cs" Line="42" Column="14" />
+      <File FileName="Assets/Scripts/Bluetooth.cs" Line="67" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

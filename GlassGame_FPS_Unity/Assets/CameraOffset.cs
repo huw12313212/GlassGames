@@ -27,7 +27,15 @@ public class CameraOffset : MonoBehaviour {
 
 		Vector3 rotate = transform.localRotation.eulerAngles;
 		init = rotate;
-		rotate.y += - (float)result + (float)targetRotationY;
+
+		float dif = - (float)result + (float)targetRotationY;
+
+		if (dif > 180)
+						dif -= 360;
+		else if (dif < - 180)
+						dif += 360;
+
+		rotate.y += dif;
 
 
 		currentCounter = 0;

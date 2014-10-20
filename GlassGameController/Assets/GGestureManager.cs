@@ -38,8 +38,8 @@ public class GGestureManager : MonoBehaviour {
 		gun,
 		grenade,
 		knife,
-		flashLight,
 		Count,
+		flashLight,
 		car,
 	}
 
@@ -119,14 +119,14 @@ public class GGestureManager : MonoBehaviour {
 							{
 								if(aimTypeController.aimType == AimTypeController.AimType.phoneGun)
 								{
-									aimTypeController.changeToWheelMode();
+									/*aimTypeController.changeToWheelMode();
 									Wheel.SetActive(true);
 									allWeaponIcon[(int)_weapon].SetActive(false);
 
 									foreach(GameObject o in joySticks)
 									{
 										o.SetActive(true);
-									}
+									}*/
 									
 								}
 								else if(aimTypeController.aimType == AimTypeController.AimType.viewportCenter)

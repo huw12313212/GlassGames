@@ -34,7 +34,7 @@ public class CheckBox : MonoBehaviour {
 				checkTexture();
 				if(EnableChangeEvent!=null)EnableChangeEvent(Enabled);
 
-				Debug.Log("Option "+name+" : "+Enabled );
+				//Debug.Log("Option "+name+" : "+Enabled );
 			};
 		}
 	}
