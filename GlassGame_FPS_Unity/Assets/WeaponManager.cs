@@ -24,6 +24,14 @@ public class WeaponManager : MonoBehaviour {
 		count,
 	}
 
+	// Use this for initialization
+	void Start () {
+		//weaponRoot [currentWeaponIndex].SetActive (false);
+		weaponRoot [currentWeaponIndex].SetActive (true);
+		CheckWeaponState();
+	}
+
+
 	public void ChangeWeaponToPrevous()
 	{
 
