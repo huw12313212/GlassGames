@@ -27,6 +27,12 @@ public class PlayerController : MonoBehaviour {
 	
 	private float backPosition;
 
+	public MonsterSpwanNodes spwanNodes;
+	public ZombieBehavior zombie;
+	public CameraOffset cameraOffset;
+	public GameObject MoveTarget;
+	public float Distance;
+
 
 	// Use this for initialization
 	void Start () {
@@ -34,19 +40,86 @@ public class PlayerController : MonoBehaviour {
 		backPosition = AndroidInput.secondaryTouchWidth *backRatio;
 		forwordPosition = AndroidInput.secondaryTouchWidth *forwordRatio;
 	}
-	
+
+	public bool UserControl
+	{
+		get
+		{
+			return userControl;
+		}
+		set
+		{
+
+			if(userControl!=value)
+			{
+				if(!value)
+				{
+					//OnTrackMoving
+					spwanNodes.index = 1;
+					transform.position = spwanNodes.MonsterSpwanNodeList[0].transform.position;
+					zombie.autoAdd = false;
+					zombie.Destroy();
+
+					MoveTarget = spwanNodes.MonsterSpwanNodeList[1];
+					cameraOffset.LookAt(MoveTarget,0.5f);
+				}
+				else
+				{
+					zombie.autoAdd = true;
+				}
+			}
+
+			userControl = value;
+		}
+	}
+
+	private bool userControl = true;
+
 	// Update is called once per frame
-	void Update () {
+	void Update () 
+	{
+		/*if (Input.GetKeyDown (KeyCode.O)) 
+		{
+			UserControl = !UserControl;		
+		}*/
 
 
-		handleMove();
-		handleJoystick();
+		if (userControl) 
+		{
+			handleMove();
+			handleJoystick ();
+		} 
+		else 
+		{
+			Vector3 v = MoveTarget.transform.position - gameObject.transform.position;
+			float dis = v.magnitude;
+			v.Normalize();
+
+			if(dis>Distance)
+			{
+				gameObject.rigidbody.velocity = v * OnTrackMoveSpeed;
+			}
+			else
+			{
+				if(zombie.HP<=0)
+				{
+					int index = spwanNodes.AddToNext();
+					MoveTarget = spwanNodes.MonsterSpwanNodeList[index];
+					cameraOffset.LookAt(MoveTarget,0.5f);
+				}
+			}
+		}
+	
+
 		handleJoystick2();
 
+		//fire
 		handleTouch ();
 
 
 	}
+
+	public float OnTrackMoveSpeed;
 
 	bool touched = false;
 	bool longpressed = false;

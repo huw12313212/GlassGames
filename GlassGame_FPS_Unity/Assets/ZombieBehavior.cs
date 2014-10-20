@@ -28,6 +28,7 @@ public class ZombieBehavior : MonoBehaviour {
 		animator.SetBool("Attack",false);
 		animator.SetBool("BeAttack",false);
 		animator.SetBool("Dead",false);
+		//animator.set
 	}
 
 	public void Hurt(float value)
@@ -48,11 +49,21 @@ public class ZombieBehavior : MonoBehaviour {
 
 	bool hurtEvent = false;
 
-	void Destroy()
+	public bool autoAdd = false;
+
+	public void Destroy()
 	{
 		//GameObject.Destroy(gameObject);
 		//monsterSpwanNodes.in
-		int index = monsterSpwanNodes.AddToNext();
+		int index = monsterSpwanNodes.index;
+		if (autoAdd) 
+		{
+			index = monsterSpwanNodes.AddToNext ();
+		}
+		else 
+		{
+			index = (index + 1) % monsterSpwanNodes.MonsterSpwanNodeList.Count;
+		}
 
 		GameObject position = monsterSpwanNodes.MonsterSpwanNodeList[index];
 
@@ -60,6 +71,8 @@ public class ZombieBehavior : MonoBehaviour {
 
 		reset ();
 	}
+
+
 
 	public float destroyTime = 2;
 	// Update is called once per frame

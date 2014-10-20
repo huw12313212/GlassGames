@@ -60,7 +60,7 @@ public class KnifeController : MonoBehaviour {
 
 		foreach (Collider col in inRanged) 
 		{
-			MonsterScript m = col.GetComponent<MonsterScript>();
+			ZombieBehavior m = col.GetComponent<ZombieBehavior>();
 			m.Hurt(damage);
 		}
 	}
