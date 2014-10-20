@@ -7,8 +7,10 @@ public class ZombieBehavior : MonoBehaviour {
 	public float attackDistance;
 	public float HP = 100;
 	public float idle = 0;
+	public MonsterSpwanNodes monsterSpwanNodes;
 
 	public GameObject player;
+
 
 	private Animator animator;
 	private bool animating = false;
@@ -17,6 +19,15 @@ public class ZombieBehavior : MonoBehaviour {
 	void Start () 
 	{
 		animator = GetComponent<Animator>();
+	}
+
+	public void reset()
+	{
+		HP = 30;
+		idle = 0;
+		animator.SetBool("Attack",false);
+		animator.SetBool("BeAttack",false);
+		animator.SetBool("Dead",false);
 	}
 
 	public void Hurt(float value)
@@ -39,7 +50,15 @@ public class ZombieBehavior : MonoBehaviour {
 
 	void Destroy()
 	{
-		GameObject.Destroy(gameObject);
+		//GameObject.Destroy(gameObject);
+		//monsterSpwanNodes.in
+		int index = monsterSpwanNodes.AddToNext();
+
+		GameObject position = monsterSpwanNodes.MonsterSpwanNodeList[index];
+
+		transform.position = position.transform.position;
+
+		reset ();
 	}
 
 	public float destroyTime = 2;
