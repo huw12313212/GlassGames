@@ -53,7 +53,9 @@
      <Compile Include="Assets\CNJoystick\Scripts\CNCameraRelativeSetup.cs" />
      <Compile Include="Assets\CNJoystick\Scripts\CNJoystick.cs" />
      <Compile Include="Assets\CNJoystick\Scripts\SkeletonAnimator.cs" />
+     <Compile Include="Assets\CheckBox.cs" />
      <Compile Include="Assets\CommunicationManager.cs" />
+     <Compile Include="Assets\ConfigButton.cs" />
      <Compile Include="Assets\GGestureManager.cs" />
      <Compile Include="Assets\GyroManager.cs" />
      <Compile Include="Assets\HOTween\_Demo\HOTweenDemoBrain.cs" />
