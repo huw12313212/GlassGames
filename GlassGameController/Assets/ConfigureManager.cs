@@ -18,7 +18,7 @@ public class ConfigureManager : MonoBehaviour {
 	public CheckBox RotateJoystickCheckBox;
 	public CheckBox VoiceControl;
 	public CheckBox AccControl;
-	//public CheckBox EyeWink;
+	public CheckBox EyeWink;
 	public CheckBox HeadGesture;
 	public CheckBox OnTrack;
 	public TapGesture Exit;
@@ -77,13 +77,25 @@ public class ConfigureManager : MonoBehaviour {
 			acc.enabled = enabled;
 		};
 
+		EyeWink.EnableChangeEvent += (bool enabled) =>
+		{
+			//;
+			JSONObject json = new JSONObject ();
+			json.AddField ("command", "changeBlink");
+			json.AddField ("state", enabled);
+			Debug.Log (json);
+			communicate.SendJson (json);
+
+		};
+
 		Exit.Tapped += (object sender, System.EventArgs e) => 
 		{
 			JSONObject json = new JSONObject ();
 			json.AddField ("command", "exit");
 			communicate.SendJson (json);
 		};
-		
+
+
 		
 		
 	}

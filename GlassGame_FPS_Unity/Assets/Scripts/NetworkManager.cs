@@ -25,6 +25,8 @@ public class NetworkManager : MonoBehaviour {
 	public int ProxyPort;
 	public TcpClient proxySocket;
 
+	public bool blinkable = false;
+
 	//public CNj
 	//public BotControlScript botControllScript;
 
@@ -109,9 +111,10 @@ public class NetworkManager : MonoBehaviour {
 		while (true)
 		{
 			string commandStr = clientStream.ReadLine();
-			//Debug.Log("reading:"+commandStr.Length);
 
-		
+			commandStr = commandStr.Replace("'","\"");
+			//Debug.Log("reading:"+commandStr.Length +" data:"+commandStr);
+			
 			JSONObject commandJsonObject = new JSONObject(commandStr);
 			commandList.Add(commandJsonObject);
 
@@ -172,12 +175,31 @@ public class NetworkManager : MonoBehaviour {
 				case "singleTap":
 				case "acceleration":
 				case "microphone":
+
 					
 					playerController.shoot();
 					//Debug.Log("Single Tap!");
 					break;
-				case "doubleTap":
-					Debug.Log("Double Tap!");
+
+				case "blink":
+				if(blinkable)
+				{
+					playerController.shoot();
+				}
+				//Debug.Log("Single Tap!");
+				break;
+
+				case "changeBlink":
+				if(commandObject["state"]!=null)
+				{
+					blinkable = commandObject["state"].b;
+				}
+
+				//Debug.Log("blinkable:"+blinkable);
+				break;
+
+			case "doubleTap":
+					//Debug.Log("Double Tap!");
 
 					
 					//Application.Quit();
